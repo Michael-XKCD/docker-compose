@@ -1,5 +1,11 @@
 version: '3.5'
 
+# Build for NC image:
+# orginal cmd: sh -c "chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data"
+# LABEL version="${NC_VERSION}"
+# FROM nextcloud:${NC_VERSION}
+# ENTRYPOINT chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data && /bin/bash
+
 # Build for ES image:
 # Name: local/elasticsearch:${ES_VERSION}
 # FROM docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
@@ -32,9 +38,6 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
       - discovery.type=single-node
-      # user: elastic
-    # ports:
-    #   - 9200:9200
 
   onlyoffice:
     image: onlyoffice/documentserver:${OO_VERSION}
@@ -45,7 +48,6 @@ services:
       - ${APPDATA_PATH}/oo_log:/var/log/onlyoffice
       - ${APPDATA_PATH}/oo_fonts:/usr/share/fonts
     networks:
-
       - proxynet
     environment:
       - JMT_ENABLED=true
@@ -55,7 +57,6 @@ services:
     image: mariadb:${MDB_VERSION}
     container_name: nextcloud-db
     command: --transaction-isolation=READ-COMMITTED
-    #--binlog-format=ROW
     volumes:
       - ${APPDATA_PATH}/db:/var/lib/mysql
     networks:
@@ -76,9 +77,14 @@ services:
       - backend
 
   app:
-    image: nextcloud
+    image: ${APPDATA_PATH}/nc_image/nextcloud:${NC_VERSION}
     container_name: nextcloud
-    # command: sh -c "chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data"
+    build:
+      context: .
+      dockerfile_inline: |
+        LABEL version="${NC_VERSION}"
+        FROM nextcloud:${NC_VERSION}
+        ENTRYPOINT chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data && /bin/bash
     depends_on:
       - db
       - redis
