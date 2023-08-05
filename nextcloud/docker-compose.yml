@@ -25,7 +25,7 @@ services:
         LABEL version="${ES_VERSION}"
         FROM docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
         RUN bin/elasticsearch-plugin install --batch ingest-attachment
-    image: ${APPDATA_PATH}/es_image/elasticsearch:${ES_VERSION}
+    image: local/elasticsearch:${ES_VERSION}
     container_name: nextcloud-elasticsearch
     volumes:
       - ${APPDATA_PATH}/es_data:/usr/share/elasticsearch/data
@@ -83,7 +83,7 @@ services:
         LABEL version="${NC_VERSION}"
         FROM nextcloud:${NC_VERSION}
         ENTRYPOINT chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data && /bin/bash
-    image: ${APPDATA_PATH}/nc_image/nextcloud:${NC_VERSION}
+    image: local/nextcloud:${NC_VERSION}
     container_name: nextcloud
     depends_on:
       - db
