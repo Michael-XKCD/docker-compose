@@ -22,6 +22,8 @@ services:
     build:
       context: .
       dockerfile: elasticsearch.Dockerfile
+      tags:
+        - "elasticsearch:${ES_VERSION}"
     image: elasticsearch:${ES_VERSION}
     container_name: nextcloud-elasticsearch
     volumes:
@@ -77,6 +79,8 @@ services:
     build:
       context: .
       dockerfile: nextcloud.Dockerfile
+      tags:
+        - "nextcloud:${NC_VERSION}"
     image: nextcloud:${NC_VERSION}
     container_name: nextcloud
     depends_on:
