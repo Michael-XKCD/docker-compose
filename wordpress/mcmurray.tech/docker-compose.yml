@@ -1,0 +1,32 @@
+version: '3.5'
+
+networks:
+  backend:
+    internal: true
+  proxynet:
+    external: true
+
+services:
+   db:
+     image: mariadb:${MDB_VERSION}
+     volumes:
+      - ${APPDATA_PATH}/db_data:/var/lib/mysql
+     networks:
+      - backend
+     environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=${DB_PWD}
+
+   wordpress:
+     image: wordpress:${WP_VERSION}
+     volumes:
+      - ${APPDATA_PATH}/wp_data:/var/www/html
+     networks:
+      - backend
+      - proxynet
+     environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=${DB_PWD}
