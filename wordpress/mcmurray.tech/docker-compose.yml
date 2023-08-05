@@ -9,7 +9,7 @@ networks:
 services:
    db:
      image: mariadb:${MDB_VERSION}
-     container_name: mcmurray-tech-wordpress-db
+     container_name: mcmurray-tech-db
      volumes:
       - ${APPDATA_PATH}/db_data:/var/lib/mysql
      networks:
