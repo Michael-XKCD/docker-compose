@@ -2,10 +2,12 @@ ARG VERSION=${VERSION}
 
 FROM nextcloud:${VERSION}
 
-COPY change-perms.txt /
+COPY change-perms.sh /
 
-RUN cat /change-perms.txt >> /entrypoint.sh
+COPY run_scripts.sh /
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /change-perms.sh
 
-RUN rm /change-perms.txt
+RUN chmod +x /run_scripts.sh
+
+ENTRYPOINT ["/run_scripts.sh"]
