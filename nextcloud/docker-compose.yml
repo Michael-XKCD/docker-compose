@@ -63,7 +63,7 @@ services:
       context: .
       dockerfile: elasticsearch.Dockerfile
       args:
-        - REPO=docker.elastic.co/elasticsearch
+        - REPO=docker.elastic.co/elasticsearch/elasticsearch
         - VERSION=${ES_VERSION}
       tags:
         - "elasticsearch:${ES_VERSION}"
