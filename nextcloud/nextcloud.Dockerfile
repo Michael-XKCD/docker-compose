@@ -1,0 +1,5 @@
+LABEL version="${NC_VERSION}"
+
+FROM nextcloud:${NC_VERSION}
+
+ENTRYPOINT chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data && /bin/bash
