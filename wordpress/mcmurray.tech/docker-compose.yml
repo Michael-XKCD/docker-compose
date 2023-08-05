@@ -9,6 +9,7 @@ networks:
 services:
    db:
      image: mariadb:${MDB_VERSION}
+     container_name: mcmurray-tech-wordpress-db
      volumes:
       - ${APPDATA_PATH}/db_data:/var/lib/mysql
      networks:
@@ -21,6 +22,7 @@ services:
 
    wordpress:
      image: wordpress:${WP_VERSION}
+     container_name: mcmurray-tech-wordpress
      volumes:
       - ${APPDATA_PATH}/wp_data:/var/www/html
      networks:
