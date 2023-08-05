@@ -22,6 +22,8 @@ services:
     build:
       context: .
       dockerfile: elasticsearch.Dockerfile
+      args:
+        - VERSION=${ES_VERSION}
       tags:
         - "elasticsearch:${ES_VERSION}"
     image: elasticsearch:${ES_VERSION}
@@ -79,6 +81,8 @@ services:
     build:
       context: .
       dockerfile: nextcloud.Dockerfile
+      args:
+        - VERSION=${NC_VERSION}
       tags:
         - "nextcloud:${NC_VERSION}"
     image: nextcloud:${NC_VERSION}
