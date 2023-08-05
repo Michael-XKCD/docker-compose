@@ -15,10 +15,10 @@ services:
      networks:
       - backend
      environment:
-      - MARIADB_RANDOM_ROOT_PASSWORD
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=wordpress
-      - MYSQL_PASSWORD=${DB_PWD}
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: ${DB_PWD}
 
    wordpress:
      image: wordpress:${WP_VERSION}
@@ -29,6 +29,6 @@ services:
       - backend
       - proxynet
      environment:
-      - WORDPRESS_DB_HOST=db
-      - WORDPRESS_DB_USER=wordpress
-      - WORDPRESS_DB_PASSWORD=${DB_PWD}
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${DB_PWD}
