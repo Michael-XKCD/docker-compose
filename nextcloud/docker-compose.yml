@@ -1,0 +1,102 @@
+version: '3.5'
+
+# Build for ES image:
+# Name: local/elasticsearch:${ES_VERSION}
+# FROM docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
+# RUN bin/elasticsearch-plugin install --batch ingest-attachment
+
+networks:
+  backend:
+    internal: true
+  proxynet:
+    external: true
+
+services:
+  elasticsearch:
+    image: ${APPDATA_PATH}/es_image/elasticsearch:${ES_VERSION}
+    container_name: nextcloud-elasticsearch
+    build:
+      context: .
+      dockerfile_inline: |
+        LABEL version="${ES_VERSION}"
+        FROM docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
+        RUN bin/elasticsearch-plugin install --batch ingest-attachment
+    volumes:
+      - ${APPDATA_PATH}/es_data:/usr/share/elasticsearch/data
+    networks:
+      - backend
+    environment:
+      - PUID=99
+      - PGID=100
+      - ELASTIC_PASSWORD=${ES_PWD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      # user: elastic
+    # ports:
+    #   - 9200:9200
+
+  onlyoffice:
+    image: onlyoffice/documentserver:${OO_VERSION}
+    container_name: nextcloud-onlyoffice
+    stdin_open: true
+    volumes:
+      - ${APPDATA_PATH}/oo_data:/var/www/onlyoffice/Data
+      - ${APPDATA_PATH}/oo_log:/var/log/onlyoffice
+      - ${APPDATA_PATH}/oo_fonts:/usr/share/fonts
+    networks:
+
+      - proxynet
+    environment:
+      - JMT_ENABLED=true
+      - JWT_SECRET=${JWT_SECRET}
+
+  db:
+    image: mariadb:${MDB_VERSION}
+    container_name: nextcloud-db
+    command: --transaction-isolation=READ-COMMITTED
+    #--binlog-format=ROW
+    volumes:
+      - ${APPDATA_PATH}/db:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  redis:
+    image: redis:${R_VERSION}
+    container_name: nextcloud-redis
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - ${APPDATA_PATH}/cache:/data
+    networks:
+      - backend
+
+  app:
+    image: nextcloud
+    container_name: nextcloud
+    # command: sh -c "chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data"
+    depends_on:
+      - db
+      - redis
+      - elasticsearch
+    volumes:
+      - ${APPDATA_PATH}/app:/var/www/html
+      - /mnt/user/NextCloud:/data
+    networks:
+      - backend
+      - proxynet
+    environment:
+      - PUID=99
+      - PGID=100
+      - PHP_MEMORY_LIMIT=8192M
+      - PHP_UPLOAD_LIMIT=32G
+      - NEXTCLOUD_DATA_DIR=/data
+      - REDIS_HOST=redis
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
