@@ -6,4 +6,6 @@ COPY entrypoint.sh /
 
 RUN chmod +x /entrypoint.sh
 
+RUN apk add docker
+
 ENTRYPOINT ["/entrypoint.sh"]

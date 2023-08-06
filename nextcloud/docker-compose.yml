@@ -115,8 +115,8 @@ services:
         - "alpine:${A_VERSION}"
     privileged: true
     network_mode: host
-    pid: host
-    ipc: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - app
       - elasticsearch
