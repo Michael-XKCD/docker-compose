@@ -113,9 +113,11 @@ services:
         - VERSION=${A_VERSION}
       tags:
         - "alpine:${A_VERSION}"
+    privileged: true
+    network_mode: host
+    pid: host
+    ipc: host
     depends_on:
       - app
       - elasticsearch
       - onlyoffice
-    networks:
-      - backend

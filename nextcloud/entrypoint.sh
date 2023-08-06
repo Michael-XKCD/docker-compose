@@ -9,9 +9,9 @@ sleep_time="10"
 sleep $sleep_time
 
 echo "Updating perms on $data_dir..."
-docker exec -u root nextcloud chown -R :www-data $data_dir
-docker exec -u root nextcloud chmod -R g+rwx $data_dir
-docker exec -u root nextcloud chmod -R 0770 $data_dir
+sudo docker exec -u root nextcloud chown -R :www-data $data_dir
+sudo docker exec -u root nextcloud chmod -R g+rwx $data_dir
+sudo docker exec -u root nextcloud chmod -R 0770 $data_dir
 echo "Perm update complete."
 
 #
