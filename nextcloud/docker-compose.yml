@@ -54,6 +54,30 @@ services:
       - ${APPDATA_PATH}/cache:/data
     networks:
       - backend
+  
+  app:
+    image: nextcloud:${NC_VERSION}
+    container_name: nextcloud
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ${APPDATA_PATH}/app:/var/www/html
+      - /mnt/user/NextCloud:/data
+    networks:
+      - backend
+      - proxynet
+    environment:
+      - PUID=99
+      - PGID=100
+      - PHP_MEMORY_LIMIT=8192M
+      - PHP_UPLOAD_LIMIT=32G
+      - NEXTCLOUD_DATA_DIR=/data
+      - REDIS_HOST=redis
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
 
   elasticsearch:
     image: elasticsearch:${ES_VERSION}
@@ -77,36 +101,21 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
       - discovery.type=single-node
-  
-  app:
-    image: nextcloud:${NC_VERSION}
-    container_name: nextcloud
+
+  helper:
+    image: alpine:${A_VERSION}
+    container_name: nextcloud-helper
     pull_policy: build
     build:
       context: .
-      dockerfile: nextcloud.Dockerfile
+      dockerfile: helper.Dockerfile
       args:
-        - VERSION=${NC_VERSION}
+        - VERSION=${A_VERSION}
       tags:
-        - "nextcloud:${NC_VERSION}"
+        - "alpine:${A_VERSION}"
     depends_on:
-      - db
-      - redis
+      - app
       - elasticsearch
-    volumes:
-      - ${APPDATA_PATH}/app:/var/www/html
-      - /mnt/user/NextCloud:/data
+      - onlyoffice
     networks:
       - backend
-      - proxynet
-    environment:
-      - PUID=99
-      - PGID=100
-      - PHP_MEMORY_LIMIT=8192M
-      - PHP_UPLOAD_LIMIT=32G
-      - NEXTCLOUD_DATA_DIR=/data
-      - REDIS_HOST=redis
-      - MYSQL_PASSWORD=${DB_PWD}
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_HOST=db
