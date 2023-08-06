@@ -17,17 +17,17 @@ echo "Perm update complete."
 #
 # Cron job to scan files
 #
-
 # docker exec -u www-data nextcloud-app php occ files:scan --all
 
 #
 # Cron job to generate previews
 #
-
 # docker exec -i nextcloud sudo -u abc php7 /config/www/nextcloud/occ preview:pre-generate
 
 #
 # Cron job to index with elastic search
 #
-
 # sudo -u apache php /var/www/html/nextcloud/occ fulltextsearch:index
+
+# Start a long-running process / daemon
+tail -f /dev/null
