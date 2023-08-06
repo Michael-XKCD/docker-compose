@@ -30,4 +30,5 @@ echo "Perm update complete."
 # sudo -u apache php /var/www/html/nextcloud/occ fulltextsearch:index
 
 # Start a long-running process / daemon
+echo "Stayin alive.. stayin alive"
 tail -f /dev/null
