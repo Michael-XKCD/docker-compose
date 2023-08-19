@@ -114,10 +114,13 @@ services:
       tags:
         - "alpine:${A_VERSION}"
     privileged: true
-    network_mode: host
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - app
       - elasticsearch
       - onlyoffice
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      default:
+        external: true
+        name: none
