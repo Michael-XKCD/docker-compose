@@ -16,6 +16,8 @@ networks:
     internal: true
   proxynet:
     external: true
+  none:
+    external: true
 
 services:
   onlyoffice:
