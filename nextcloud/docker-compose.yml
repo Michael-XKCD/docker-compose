@@ -125,4 +125,3 @@ services:
     networks:
       default:
         name: none
-        external: true
