@@ -16,8 +16,6 @@ networks:
     internal: true
   proxynet:
     external: true
-  none:
-    external: true
 
 services:
   onlyoffice:
@@ -125,4 +123,4 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - none
+      - backend
