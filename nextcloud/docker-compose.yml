@@ -28,8 +28,6 @@ services:
       - ${APPDATA_PATH}/oo_fonts:/usr/share/fonts
     networks:
       - proxynet
-    env_file:
-      - version.env
     environment:
       - JMT_ENABLED=true
       - JWT_SECRET=${JWT_SECRET}
@@ -69,6 +67,8 @@ services:
     networks:
       - backend
       - proxynet
+    env_file:
+      - version.env
     environment:
       - PUID=99
       - PGID=100
