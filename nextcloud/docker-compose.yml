@@ -124,5 +124,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       default:
-        external: true
         name: none
+        external: true
