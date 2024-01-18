@@ -67,8 +67,6 @@ services:
     networks:
       - backend
       - proxynet
-    env_file:
-      - version.env
     environment:
       - PUID=99
       - PGID=100
