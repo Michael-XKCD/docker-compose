@@ -56,7 +56,7 @@ services:
       - backend
   
   app:
-    image: nextcloud:28
+    image: nextcloud:26
     container_name: nextcloud
     depends_on:
       - db
