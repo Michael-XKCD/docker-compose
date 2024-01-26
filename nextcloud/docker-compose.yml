@@ -19,7 +19,7 @@ networks:
 
 services:
   onlyoffice:
-    image: onlyoffice/documentserver:${OO_VERSION}
+    image: onlyoffice/documentserver:8
     container_name: nextcloud-onlyoffice
     stdin_open: true
     volumes:
@@ -33,7 +33,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
 
   db:
-    image: mariadb:${MDB_VERSION}
+    image: mariadb:10
     container_name: nextcloud-db
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -47,7 +47,7 @@ services:
       - MYSQL_USER=nextcloud
 
   redis:
-    image: redis:${R_VERSION}
+    image: redis:7.2
     container_name: nextcloud-redis
     command: redis-server --save 60 1 --loglevel warning
     volumes:
@@ -56,7 +56,7 @@ services:
       - backend
   
   app:
-    image: nextcloud:${NC_VERSION}
+    image: nextcloud:28
     container_name: nextcloud
     depends_on:
       - db
@@ -78,9 +78,42 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.php-cron.schedule: "@every 5m"
+      ofelia.job-exec.php-cron.user: "www-data"
+      ofelia.job-exec.php-cron.command: "php -f /var/www/html/cron.php"
+      ofelia.job-exec.occ-scan.schedule: "@every 5m"
+      ofelia.job-exec.occ-scan.user: "www-data"
+      ofelia.job-exec.occ-scan.command: "php occ files:scan --unscanned --generate-metadata"
+      ofelia.job-exec.occ-scan-appdata.schedule: "@weekly"
+      ofelia.job-exec.occ-scan-appdata.user: "www-data"
+      ofelia.job-exec.occ-scan-appdata.command: "php occ files:scan-app-data"
+      ofelia.job-exec.occ-cleanup.schedule: "@hourly"
+      ofelia.job-exec.occ-cleanup.user: "www-data"
+      ofelia.job-exec.occ-cleanup.command: "php occ files:cleanup"
+      ofelia.job-exec.occ-db-indices.schedule: "@weekly"
+      ofelia.job-exec.occ-db-indices.user: "www-data"
+      ofelia.job-exec.occ-db-indices.command: "php occ db:add-missing-indices"
+      ofelia.job-exec.occ-index.schedule: "@hourly"
+      ofelia.job-exec.occ-index.user: "www-data"
+      ofelia.job-exec.occ-index.command: "php occ fulltextsearch:index"
+      ofelia.job-exec.data-chown.schedule: "@hourly"
+      ofelia.job-exec.data-chmod1.schedule: "@hourly"
+      ofelia.job-exec.data-chmod2.schedule: "@hourly"
+      ofelia.job-exec.data-chown.user: "root"
+      ofelia.job-exec.data-chmod1.user: "root"
+      ofelia.job-exec.data-chmod2.user: "root"
+      ofelia.job-exec.data-chown.command: "chown -R :www-data /data"
+      ofelia.job-exec.data-chmod1.command: "chmod -R g+rwx /data"
+      ofelia.job-exec.data-chmod2.command: "chmod -R 0770 /data"
+      # Requires Preview Generator https://apps.nextcloud.com/apps/previewgenerator
+      # ofelia.job-exec.occ-preview.schedule: "@every 15m"
+      # ofelia.job-exec.occ-preview.user: "www-data"
+      # ofelia.job-exec.occ-preview.command: "php occ preview:pre-generate"
 
   elasticsearch:
-    image: elasticsearch:${ES_VERSION}
+    image: elasticsearch:7.16.0
     container_name: nextcloud-elasticsearch
     pull_policy: build
     build:
@@ -102,23 +135,13 @@ services:
       - xpack.security.enabled=false
       - discovery.type=single-node
 
-  helper:
-    image: alpine:${A_VERSION}
-    container_name: nextcloud-helper
-    pull_policy: build
-    build:
-      context: .
-      dockerfile: helper.Dockerfile
-      args:
-        - VERSION=${A_VERSION}
-      tags:
-        - "alpine:${A_VERSION}"
-    privileged: true
+  ofelia:
+    image: mcuadros/ofelia:latest
+    container_name: nextcloud-cron
     depends_on:
       - app
-      - elasticsearch
-      - onlyoffice
+    command: daemon --docker
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - backend
