@@ -1,11 +1,5 @@
 version: '3.5'
 
-# Build for NC image:
-# orginal cmd: sh -c "chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data"
-# LABEL version="${NC_VERSION}"
-# FROM nextcloud:${NC_VERSION}
-# ENTRYPOINT chown -R :www-data /data && chmod -R g+rwx /data && chmod -R 0770 /data && /bin/bash
-
 # Build for ES image:
 # Name: local/elasticsearch:${ES_VERSION}
 # FROM docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}
