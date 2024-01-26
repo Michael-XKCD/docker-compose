@@ -113,7 +113,7 @@ services:
       # ofelia.job-exec.occ-preview.command: "php occ preview:pre-generate"
 
   elasticsearch:
-    image: elasticsearch:7.16.0
+    image: elasticsearch:${ES_VERSION}
     container_name: nextcloud-elasticsearch
     pull_policy: build
     build:
