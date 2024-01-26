@@ -19,7 +19,7 @@ networks:
 
 services:
   onlyoffice:
-    image: onlyoffice/documentserver:8
+    image: onlyoffice/documentserver:7
     container_name: nextcloud-onlyoffice
     stdin_open: true
     volumes:
