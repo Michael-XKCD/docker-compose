@@ -85,7 +85,7 @@ services:
       ofelia.job-exec.php-cron.command: "php -f /var/www/html/cron.php"
       ofelia.job-exec.occ-scan.schedule: "@every 5m"
       ofelia.job-exec.occ-scan.user: "www-data"
-      ofelia.job-exec.occ-scan.command: "php occ files:scan --unscanned --generate-metadata"
+      ofelia.job-exec.occ-scan.command: "php occ files:scan --all --unscanned --generate-metadata"
       ofelia.job-exec.occ-scan-appdata.schedule: "@weekly"
       ofelia.job-exec.occ-scan-appdata.user: "www-data"
       ofelia.job-exec.occ-scan-appdata.command: "php occ files:scan-app-data"
