@@ -16,10 +16,10 @@ services:
       - 380:80
       - 3443:443
     environment:
-      # - CF_DNS_API_TOKEN=${CF_API_TOKEN}
+      - CF_DNS_API_TOKEN=${CF_API_TOKEN}
       # If you choose to use an API Key instead of a Token, specify your email as well
-      - CF_API_EMAIL=${CF_EMAIL}
-      - CF_API_KEY=${CF_API_TOKEN}
+      # - CF_API_EMAIL=${CF_EMAIL}
+      # - CF_API_KEY=${CF_API_TOKEN}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -34,11 +34,11 @@ services:
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`proxy-dash.mcmurray.tech`)"
-      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=mcmurray.tech"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.mcmurray.tech"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.routers.dashboard-router.entrypoints=https"
+      - "traefik.http.routers.dashboard-router.rule=Host(`proxy-dash.mcmurray.tech`)"
+      - "traefik.http.routers.dashboard-router.middlewares=traefik-auth"
+      - "traefik.http.routers.dashboard-router.tls=true"
+      - "traefik.http.routers.dashboard-router.tls.certresolver=cloudflare"
+      - "traefik.http.routers.dashboard-router.tls.domains[0].main=mcmurray.tech"
+      - "traefik.http.routers.dashboard-router.tls.domains[0].sans=*.mcmurray.tech"
+      - "traefik.http.routers.dashboard-router.service=api@internal"
