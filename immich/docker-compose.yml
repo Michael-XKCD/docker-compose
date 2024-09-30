@@ -24,7 +24,7 @@ services:
       - backend
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_USER: ${DB_USERNAME}
+      DB_USERNAME: ${DB_USERNAME}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
       PUID: 99
       PGID: 100
