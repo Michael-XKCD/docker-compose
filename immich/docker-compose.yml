@@ -23,10 +23,13 @@ services:
       - proxynet
       - backend
     environment:
-      - PUID=99
-      - PGID=100
-      - UMASK=022
-      - TZ=America/Vancouver
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+      PUID: 99
+      PGID: 100
+      UMASK: 022
+      TZ: America/Vancouver
     healthcheck:
       disable: false
 
