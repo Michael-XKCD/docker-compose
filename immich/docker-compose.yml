@@ -6,9 +6,6 @@ networks:
   proxynet:
     external: true
 
-# volumes:
-#   model-cache:
-
 services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
@@ -44,8 +41,8 @@ services:
     # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
     #   file: hwaccel.ml.yml
     #   service: cpu # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
-    # volumes:
-    #   - model-cache:/cache
+    volumes:
+      - ${APPDATA_PATH}/model-cache:/cache
     networks:
       - backend
     healthcheck:
@@ -87,3 +84,6 @@ services:
       # database container will not receive an initial health check until interval time has passed.
       # See: https://immich.app/docs/install/unraid
     command: ["postgres", "-c", "shared_preload_libraries=vectors.so", "-c", 'search_path="$$user", public, vectors', "-c", "logging_collector=on", "-c", "max_wal_size=2GB", "-c", "shared_buffers=512MB", "-c", "wal_compression=on"]
+
+# volumes:
+#   model-cache:
