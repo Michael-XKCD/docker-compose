@@ -6,6 +6,9 @@ networks:
   proxynet:
     external: true
 
+volumes:
+  model-cache:
+
 services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
@@ -42,7 +45,7 @@ services:
     #   file: hwaccel.ml.yml
     #   service: cpu # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     volumes:
-      - ${APPDATA_PATH}/model-cache:/cache
+      - model-cache:/cache
     networks:
       - backend
     healthcheck:
