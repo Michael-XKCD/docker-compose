@@ -11,18 +11,10 @@ services:
     environment:
       - TZ=America/Los_Angeles
       - DB_SQLITE_FILE=/data/database.sqlite
-      # - HOST_OS=Unraid
-      # - HOST_HOSTNAME=MeMe
-      # - HOST_CONTAINERNAME=Nginx-Proxy-Manager
     networks:
       proxynet:
       br0:
         ipv4_address: ${LAN_IP}
-    # ports:
-    #   - "281:81"        # WebUI
-    #   - "280:80"        # HTTP Port
-    #   - "2443:443"      # HTTPS Port
-    #   - "3000:3000"     # API Port
     volumes:
       - ${APPDATA_PATH}/data:/data
       - ${APPDATA_PATH}/letsencrypt:/etc/letsencrypt
