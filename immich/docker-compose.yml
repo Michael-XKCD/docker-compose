@@ -29,7 +29,7 @@ services:
       PUID: 99
       PGID: 100
       UMASK: 022
-      TZ: America/Vancouver
+      TZ: America/Los_Angeles
     healthcheck:
       disable: false
 
