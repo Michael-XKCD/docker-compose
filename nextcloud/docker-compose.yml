@@ -80,7 +80,7 @@ services:
       - MYSQL_HOST=db
     labels:
       net.unraid.docker.webui: https://${UI_URL}
-      net.unraid.docker.icon: https://cdn.icon-icons.com/icons2/2699/PNG/512/nextcloud_logo_icon_168948.png
+      net.unraid.docker.icon: https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/nextcloud-logo.png
       ofelia.enabled: "true"
       ofelia.job-exec.php-cron.schedule: "@every 5m"
       ofelia.job-exec.php-cron.user: "www-data"
