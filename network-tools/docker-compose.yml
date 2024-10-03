@@ -4,7 +4,10 @@ networks:
 
 services:
   network-tools:
-    image: jonlabelle/network-tools:latest
+    image: jonlabelle/network-tools
     container_name: network-tools
     networks:
       - proxynet
+    environment:
+      PUID: 99
+      PGID: 100
