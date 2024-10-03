@@ -3,9 +3,9 @@ networks:
     external: true
 
 services:
-  npm:
+  external-proxy:
     image: jc21/nginx-proxy-manager:${NPM_VERSION}
-    container_name: NPM
+    container_name: external-proxy
     environment:
       - TZ=America/Los_Angeles
       - DB_SQLITE_FILE=/data/database.sqlite
