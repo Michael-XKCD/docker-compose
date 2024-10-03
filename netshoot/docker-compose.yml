@@ -4,10 +4,9 @@ networks:
 
 services:
   netshoot:
-    image: nicolaka/netshoot:latest
+    image: nicolaka/netshoot:${N_VERSION}
     container_name: netshoot
     networks:
       - proxynet
-    # environment:
-    #   PUID: 99
-    #   PGID: 100
+    volumes:
+      - ${APPDATA_PATH}/data:/data
