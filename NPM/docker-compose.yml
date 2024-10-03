@@ -24,3 +24,6 @@ services:
       - ${APPDATA_PATH}/data:/data
       - ${APPDATA_PATH}/letsencrypt:/etc/letsencrypt
       - ${TMP_PATH}/var/log:/var/log
+    labels:
+      net.unraid.docker.webui: http://${UI_URL}
+      net.unraid.docker.icon: https://nginxproxymanager.com/icon.png

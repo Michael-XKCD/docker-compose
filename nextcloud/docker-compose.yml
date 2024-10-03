@@ -25,6 +25,8 @@ services:
     environment:
       - JMT_ENABLED=true
       - JWT_SECRET=${JWT_SECRET}
+    labels:
+      net.unraid.docker.icon: https://avatars.githubusercontent.com/u/1426033?s=280&v=4
 
   db:
     image: mariadb:10
@@ -39,6 +41,8 @@ services:
       - MYSQL_PASSWORD=${DB_PWD}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
+    labels:
+      net.unraid.docker.icon: https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vert_blue-transparent.png
 
   redis:
     image: redis:7.2
@@ -48,6 +52,8 @@ services:
       - ${APPDATA_PATH}/cache:/data
     networks:
       - backend
+    labels:
+      net.unraid.docker.icon: https://banner2.cleanpng.com/20180614/at/kisspng-redis-distributed-cache-database-caching-wrapper-5b23184e29e4c3.6868417715290266381716.jpg
   
   app:
     image: nextcloud:28
@@ -73,6 +79,8 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
     labels:
+      net.unraid.docker.webui: https://${UI_URL}
+      net.unraid.docker.icon: https://cdn.icon-icons.com/icons2/2699/PNG/512/nextcloud_logo_icon_168948.png
       ofelia.enabled: "true"
       ofelia.job-exec.php-cron.schedule: "@every 5m"
       ofelia.job-exec.php-cron.user: "www-data"
@@ -128,6 +136,8 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
       - discovery.type=single-node
+    labels:
+      net.unraid.docker.icon: https://seeklogo.com/images/E/elasticsearch-logo-C75C4578EC-seeklogo.com.png
 
   ofelia:
     image: mcuadros/ofelia:latest
@@ -139,3 +149,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - backend
+    labels:
+      net.unraid.docker.icon: https://camo.githubusercontent.com/7fd4d56297d8a1d4cc9edf29777c5db89b586f80a72f16e04bb37722db26c536/68747470733a2f2f776569726473706163652e646b2f4672616e636973636f4962616e657a2f47726170686963732f4f66656c69612e676966
