@@ -20,7 +20,7 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: ${DB_PWD}
     labels:
-      net.unraid.docker.icon: https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vert_blue-transparent.png
+      net.unraid.docker.icon: https://github.com/mgutt/unraid-docker-templates/raw/main/mgutt/images/mariadb.png
 
   wordpress:
     image: wordpress:${WP_VERSION}
@@ -36,4 +36,4 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PWD}
     labels:
       net.unraid.docker.webui: https://${UI_URL}
-      net.unraid.docker.icon: https://banner2.cleanpng.com/20180504/ocw/avdmwp8cv.webp
+      net.unraid.docker.icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png
