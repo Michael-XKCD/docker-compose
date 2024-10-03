@@ -1,0 +1,26 @@
+networks:
+  br0:
+    external: true
+  proxylan:
+    external: true
+
+services:
+  internal-proxy:
+    image: jc21/nginx-proxy-manager:${NPM_VERSION}
+    container_name: internal-proxy
+    environment:
+      - TZ=America/Los_Angeles
+      - DB_SQLITE_FILE=/data/database.sqlite
+      - PUID=99
+      - PGID=100
+    networks:
+      proxylan:
+      br0:
+        ipv4_address: ${LAN_IP}
+    volumes:
+      - ${APPDATA_PATH}/data:/data
+      - ${APPDATA_PATH}/letsencrypt:/etc/letsencrypt
+      - ${TMP_PATH}/var/log:/var/log
+    labels:
+      net.unraid.docker.webui: http://${UI_URL}
+      net.unraid.docker.icon: https://nginxproxymanager.com/icon.png
