@@ -15,9 +15,9 @@ services:
       # - HOST_HOSTNAME=MeMe
       # - HOST_CONTAINERNAME=Nginx-Proxy-Manager
     networks:
+      proxynet:
       br0:
         ipv4_address: ${LAN_IP}
-      proxynet:
     # ports:
     #   - "281:81"        # WebUI
     #   - "280:80"        # HTTP Port
