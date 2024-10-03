@@ -63,7 +63,7 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     labels:
-      net.unraid.docker.icon: https://banner2.cleanpng.com/20180614/at/kisspng-redis-distributed-cache-database-caching-wrapper-5b23184e29e4c3.6868417715290266381716.jpg
+      net.unraid.docker.icon: https://banner2.cleanpng.com/20180331/xwe/avh53unx5.webp
 
   database:
     image: ${DB_IMAGE}
@@ -92,6 +92,6 @@ services:
       # See: https://immich.app/docs/install/unraid
     command: ["postgres", "-c", "shared_preload_libraries=vectors.so", "-c", 'search_path="$$user", public, vectors', "-c", "logging_collector=on", "-c", "max_wal_size=2GB", "-c", "shared_buffers=512MB", "-c", "wal_compression=on"]
     labels:
-      net.unraid.docker.icon: https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg
+      net.unraid.docker.icon: https://w7.pngwing.com/pngs/448/730/png-transparent-postgresql-plain-logo-icon-thumbnail.png
 # volumes:
 #   model-cache:
