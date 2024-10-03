@@ -1,0 +1,10 @@
+networks:
+  proxynet:
+    external: true
+
+services:
+  network-tools:
+    image: jonlabelle/network-tools:latest
+    container_name: network-tools
+    networks:
+      - proxynet
