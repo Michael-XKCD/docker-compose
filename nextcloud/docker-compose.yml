@@ -13,7 +13,7 @@ networks:
 
 services:
   onlyoffice:
-    image: onlyoffice/documentserver:7.5.1
+    image: onlyoffice/documentserver:${OO_VERSION}
     container_name: nextcloud-onlyoffice
     stdin_open: true
     volumes:
@@ -29,7 +29,7 @@ services:
       net.unraid.docker.icon: https://avatars.githubusercontent.com/u/1426033?s=280&v=4
 
   db:
-    image: mariadb:10
+    image: mariadb:${MDB_VERSION}
     container_name: nextcloud-db
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -45,7 +45,7 @@ services:
       net.unraid.docker.icon: https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vert_blue-transparent.png
 
   redis:
-    image: redis:7.2
+    image: redis:${R_VERSION}
     container_name: nextcloud-redis
     command: redis-server --save 60 1 --loglevel warning
     volumes:
@@ -56,7 +56,7 @@ services:
       net.unraid.docker.icon: https://banner2.cleanpng.com/20180331/xwe/avh53unx5.webp
   
   app:
-    image: nextcloud:28
+    image: nextcloud:${NC_VERSION}
     container_name: nextcloud
     depends_on:
       - db
@@ -140,7 +140,7 @@ services:
       net.unraid.docker.icon: https://seeklogo.com/images/E/elasticsearch-logo-C75C4578EC-seeklogo.com.png
 
   ofelia:
-    image: mcuadros/ofelia:latest
+    image: mcuadros/ofelia:${CRON_VERSION}
     container_name: nextcloud-cron
     depends_on:
       - app
