@@ -1,9 +1,5 @@
 networks:
-  br0:
-    external: true
   proxynet:
-    external: true
-  proxylan:
     external: true
 
 services:
@@ -16,10 +12,7 @@ services:
       - PUID=99
       - PGID=100
     networks:
-      proxylan:
-      proxynet:
-      br0:
-        ipv4_address: ${LAN_IP}
+      - proxynet
     volumes:
       - ${APPDATA_PATH}/data:/data
       - ${APPDATA_PATH}/letsencrypt:/etc/letsencrypt
