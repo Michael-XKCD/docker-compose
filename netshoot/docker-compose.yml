@@ -6,6 +6,7 @@ services:
   netshoot:
     image: nicolaka/netshoot:${N_VERSION}
     container_name: netshoot
+    command: ls /data
     networks:
       - proxynet
     volumes:
