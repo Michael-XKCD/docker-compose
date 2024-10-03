@@ -13,6 +13,11 @@ services:
       - PGID=100
     networks:
       - proxynet
+    ports:
+      - "1081:81"
+      - "1080:80"
+      - "10443:443"
+      - "3000:3000"
     volumes:
       - ${APPDATA_PATH}/data:/data
       - ${APPDATA_PATH}/letsencrypt:/etc/letsencrypt
