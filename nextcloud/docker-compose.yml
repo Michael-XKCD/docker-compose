@@ -53,7 +53,7 @@ services:
     networks:
       - backend
     labels:
-      net.unraid.docker.icon: https://banner2.cleanpng.com/20180614/at/kisspng-redis-distributed-cache-database-caching-wrapper-5b23184e29e4c3.6868417715290266381716.jpg
+      net.unraid.docker.icon: https://banner2.cleanpng.com/20180331/xwe/avh53unx5.webp
   
   app:
     image: nextcloud:28
