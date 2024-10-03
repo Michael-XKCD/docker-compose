@@ -32,6 +32,9 @@ services:
       TZ: America/Los_Angeles
     healthcheck:
       disable: false
+    labels:
+      net.unraid.docker.webui: https://${UI_URL}
+      net.unraid.docker.icon: https://avatars.githubusercontent.com/u/109746326?s=200&v=4
 
   immich-machine-learning:
     container_name: immich-ml
@@ -47,6 +50,8 @@ services:
       - backend
     healthcheck:
       disable: false
+    labels:
+      net.unraid.docker.icon: https://upload.wikimedia.org/wikipedia/commons/d/d5/Hey_Machine_Learning_Logo.png
 
   redis:
     image: ${REDIS_IMAGE}
@@ -57,6 +62,8 @@ services:
       - backend
     healthcheck:
       test: redis-cli ping || exit 1
+    labels:
+      net.unraid.docker.icon: https://banner2.cleanpng.com/20180614/at/kisspng-redis-distributed-cache-database-caching-wrapper-5b23184e29e4c3.6868417715290266381716.jpg
 
   database:
     image: ${DB_IMAGE}
@@ -84,6 +91,7 @@ services:
       # database container will not receive an initial health check until interval time has passed.
       # See: https://immich.app/docs/install/unraid
     command: ["postgres", "-c", "shared_preload_libraries=vectors.so", "-c", 'search_path="$$user", public, vectors', "-c", "logging_collector=on", "-c", "max_wal_size=2GB", "-c", "shared_buffers=512MB", "-c", "wal_compression=on"]
-
+    labels:
+      net.unraid.docker.icon: https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg
 # volumes:
 #   model-cache:
