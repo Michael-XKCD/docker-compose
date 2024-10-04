@@ -27,6 +27,7 @@ services:
       - ./android_avd:/data
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    container_name: android-emulator
     network_mode: bridge
     labels:
       net.unraid.docker.icon: https://github.com/HQarroum/docker-android/raw/main/assets/icon.png
