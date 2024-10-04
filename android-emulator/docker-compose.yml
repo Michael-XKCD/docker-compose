@@ -12,5 +12,5 @@ services:
     devices:
       - /dev/kvm
     labels:
-      net.unraid.docker.webui: http://10.0.0.10:5900
+      net.unraid.docker.webui: http://10.0.0.10:6080
       net.unraid.docker.icon: https://raw.githubusercontent.com/tiagorlampert/RootChecker/master/res/Logo.png
