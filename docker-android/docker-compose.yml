@@ -1,0 +1,19 @@
+networks:
+  bridge:
+    external: true
+
+services:
+  android-container:
+    image: budtmo/docker-android:emulator_14.0
+    container_name: android-container
+    privileged: true
+    volumes:
+      - ${APPDATA_PATH}/data:/home/androidusr
+    networks:
+      - bridge
+    ports:
+      - "5900:5900"
+    environment:
+      EMULATOR_DEVICEL: Samsung Galaxy S10
+    devices:
+      - /dev/kvm
