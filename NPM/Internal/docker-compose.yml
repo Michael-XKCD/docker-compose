@@ -1,8 +1,6 @@
 networks:
   br0:
     external: true
-  proxylan:
-    external: true
 
 services:
   internal-proxy:
@@ -14,7 +12,6 @@ services:
       - PUID=99
       - PGID=100
     networks:
-      proxylan:
       br0:
         ipv4_address: ${LAN_IP}
     volumes:
