@@ -14,7 +14,7 @@ services:
     ports:
       - "5900:5900"
     environment:
-      EMULATOR_DEVICEL: Samsung Galaxy S10
+      EMULATOR_DEVICE: Samsung Galaxy S10
     devices:
       - /dev/kvm
     labels:
