@@ -1,11 +1,13 @@
 services:
   android-emulator:
+    container_name: android-emulator
     build:
       context: .
       args:
         - API_LEVEL=34
         - CMD_LINE_VERSION=11076708_latest
         - IMG_TYPE=google_apis
+    network_mode: bridge
     ports:
       - 5554:5554
       - 5555:5555
@@ -25,7 +27,5 @@ services:
       - ./android_avd:/data
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    container_name: android-emulator
-    network_mode: bridge
     labels:
       net.unraid.docker.icon: https://github.com/HQarroum/docker-android/raw/main/assets/icon.png
