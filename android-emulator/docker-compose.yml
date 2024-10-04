@@ -1,17 +1,32 @@
+version: "4"
+
 services:
   android-emulator:
-    image: budtmo/docker-android:emulator_14.0
-    container_name: android-emulator
-    privileged: true
-    network_mode: bridge
-    # volumes:
-    #   - ${APPDATA_PATH}/data:/home/androidusr
+    build:
+      context: .
+      args:
+        - API_LEVEL=34
+        - CMD_LINE_VERSION=11076708_latest
+        - IMG_TYPE=google_apis
     ports:
-      - "6080:6080"
+      - 5554:5554
+      - 5555:5555
     environment:
-      EMULATOR_DEVICE: Samsung Galaxy S10
-    devices:
-      - /dev/kvm
+      - DISABLE_ANIMATION=false
+      - DISABLE_HIDDEN_POLICY=true
+      - SKIP_AUTH=false
+      #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
+      - MEMORY=16384
+      - CORES=16
+    privileged: true
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./keys/adbkey:/root/.android/adbkey:ro
+      - ./keys/adbkey.pub:/root/.android/adbkey.pub:ro
+      - ./android_avd:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    network_mode: bridge
     labels:
-      net.unraid.docker.webui: http://10.0.0.10:6080
-      net.unraid.docker.icon: https://raw.githubusercontent.com/tiagorlampert/RootChecker/master/res/Logo.png
+      net.unraid.docker.icon: https://github.com/HQarroum/docker-android/raw/main/assets/icon.png

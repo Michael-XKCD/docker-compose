@@ -1,0 +1,16 @@
+services:
+  android-emulator:
+    image: budtmo/docker-android:emulator_14.0
+    container_name: android-emulator
+    privileged: true
+    network_mode: bridge
+    # volumes:
+    #   - ${APPDATA_PATH}/data:/home/androidusr
+    ports:
+      - "6080:6080"
+    environment:
+      EMULATOR_DEVICE: Samsung Galaxy S10
+    devices:
+      - /dev/kvm
+    labels:
+      net.unraid.docker.icon: https://github.com/HQarroum/docker-android/raw/main/assets/icon.png
