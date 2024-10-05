@@ -8,9 +8,6 @@ services:
     container_name: internal-proxy
     environment:
       - TZ=America/Los_Angeles
-      - DB_SQLITE_FILE=/data/database.sqlite
-      - PUID=99
-      - PGID=100
     networks:
       br0:
         ipv4_address: ${LAN_IP}
