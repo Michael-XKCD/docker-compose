@@ -7,28 +7,33 @@ networks:
     external: true
 
 services:
-   db:
-     image: mariadb:${MDB_VERSION}
-     container_name: mcmurray-tech-db
-     volumes:
+  db:
+    image: mariadb:${MDB_VERSION}
+    container_name: mcmurray-tech-db
+    volumes:
       - ${APPDATA_PATH}/db_data:/var/lib/mysql
-     networks:
+    networks:
       - backend
-     environment:
+    environment:
       MYSQL_RANDOM_ROOT_PASSWORD: yes
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: ${DB_PWD}
+    labels:
+      net.unraid.docker.icon: https://github.com/mgutt/unraid-docker-templates/raw/main/mgutt/images/mariadb.png
 
-   wordpress:
-     image: wordpress:${WP_VERSION}
-     container_name: mcmurray-tech-wordpress
-     volumes:
+  wordpress:
+    image: wordpress:${WP_VERSION}
+    container_name: mcmurray-tech-wordpress
+    volumes:
       - ${APPDATA_PATH}/wp_data:/var/www/html
-     networks:
+    networks:
       - backend
       - proxynet
-     environment:
+    environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: ${DB_PWD}
+    labels:
+      net.unraid.docker.webui: https://${UI_URL}
+      net.unraid.docker.icon: https://s.w.org/style/images/about/WordPress-logotype-wmark.png

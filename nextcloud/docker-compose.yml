@@ -13,7 +13,7 @@ networks:
 
 services:
   onlyoffice:
-    image: onlyoffice/documentserver:7.5.1
+    image: onlyoffice/documentserver:${OO_VERSION}
     container_name: nextcloud-onlyoffice
     stdin_open: true
     volumes:
@@ -25,9 +25,11 @@ services:
     environment:
       - JMT_ENABLED=true
       - JWT_SECRET=${JWT_SECRET}
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/SiwatINC/unraid-ca-repository/master/icons/onlyoffice.png
 
   db:
-    image: mariadb:10
+    image: mariadb:${MDB_VERSION}
     container_name: nextcloud-db
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -39,18 +41,22 @@ services:
       - MYSQL_PASSWORD=${DB_PWD}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
+    labels:
+      net.unraid.docker.icon: https://github.com/mgutt/unraid-docker-templates/raw/main/mgutt/images/mariadb.png
 
   redis:
-    image: redis:7.2
+    image: redis:${R_VERSION}
     container_name: nextcloud-redis
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - ${APPDATA_PATH}/cache:/data
     networks:
       - backend
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/A75G/docker-templates/master/templates/icons/redis.png
   
   app:
-    image: nextcloud:28
+    image: nextcloud:${NC_VERSION}
     container_name: nextcloud
     depends_on:
       - db
@@ -73,6 +79,8 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
     labels:
+      net.unraid.docker.webui: https://${UI_URL}
+      net.unraid.docker.icon: https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/nextcloud-logo.png
       ofelia.enabled: "true"
       ofelia.job-exec.php-cron.schedule: "@every 5m"
       ofelia.job-exec.php-cron.user: "www-data"
@@ -128,9 +136,11 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
       - discovery.type=single-node
+    labels:
+      net.unraid.docker.icon: https://github.com/FoxxMD/unraid-docker-templates/raw/master/elasticsearch.png
 
   ofelia:
-    image: mcuadros/ofelia:latest
+    image: mcuadros/ofelia:${CRON_VERSION}
     container_name: nextcloud-cron
     depends_on:
       - app
@@ -139,3 +149,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - backend
+    labels:
+      net.unraid.docker.icon: https://github.com/brianmiller/docker-templates/raw/master/cronicle/cronicle.png
