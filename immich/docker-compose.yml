@@ -28,7 +28,7 @@ services:
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
       PUID: 99
       PGID: 100
-      UMASK: 022
+      UMASK: "022"
       TZ: America/Los_Angeles
     healthcheck:
       disable: false
