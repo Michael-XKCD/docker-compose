@@ -11,8 +11,13 @@ services:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     container_name: immich_server
     depends_on:
-      - redis
-      - database
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # depends_on:
+    #  - redis
+    #  - database
     # extends:
     #   file: hwaccel.transcoding.yml
     #   service: cpu # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
@@ -77,6 +82,11 @@ services:
       - ${APPDATA_PATH}/db:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: pg_isready -d ${DB_DATABASE_NAME} -U ${DB_USERNAME} || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 60
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/postgres/Postgresql_elephant.png
 # volumes:
