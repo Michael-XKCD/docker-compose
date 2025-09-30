@@ -3,6 +3,8 @@
 networks:
   backend:
     internal: true
+  egress:
+    internal: false
   proxynet:
     external: true
 
@@ -15,9 +17,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # depends_on:
-    #  - redis
-    #  - database
     # extends:
     #   file: hwaccel.transcoding.yml
     #   service: cpu # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
@@ -53,6 +52,7 @@ services:
       - ${APPDATA_PATH}/model-cache:/cache
     networks:
       - backend
+      - egress
     healthcheck:
       disable: false
     labels:
@@ -66,7 +66,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: redis-cli ping || exit 1
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/A75G/docker-templates/master/templates/icons/redis.png
 
@@ -83,11 +83,9 @@ services:
     networks:
       - backend
     healthcheck:
-      test: pg_isready -d ${DB_DATABASE_NAME} -U ${DB_USERNAME} || exit 1
+      test: ["CMD-SHELL", "pg_isready -d '${DB_DATABASE_NAME}' -U '${DB_USERNAME}' || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 60
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/postgres/Postgresql_elephant.png
-# volumes:
-#   model-cache:
