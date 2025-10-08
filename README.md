@@ -1,8 +1,8 @@
 # Docker Compose Collections
 
-> 🐳 A curated collection of production-ready Docker Compose configurations for self-hosted applications and development environments.
+> A curated collection of production-ready Docker Compose configurations for self-hosted applications and development environments.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Available Services](#available-services)
 - [Prerequisites](#prerequisites)
@@ -12,22 +12,22 @@
 - [Maintenance](#maintenance)
 - [Contributing](#contributing)
 
-## 🚀 Available Services
+## Available Services
 
 | Service | Description | Status | Web UI |
 |---------|-------------|--------|--------|
-| **[Android Emulator](./android-emulator/)** | Headless Android emulator for testing | ✅ Active | `http://localhost:6080` |
-| **[Immich](./immich/)** | High-performance photo & video management | ✅ Active | `http://localhost:2283` |
-| **[NPM](./NPM/)** | Nginx Proxy Manager (Internal/External) | ✅ Active | `http://localhost:81` |
-| **[WordPress](./wordpress/)** | WordPress with MySQL (mcmurray.tech) | ✅ Active | Configured domain |
-| **[Nextcloud](./nextcloud/)** | ⚠️ Migrated to AIO | 🔄 See folder | - |
+| **[Android Emulator](./android-emulator/)** | Headless Android emulator for testing | Active | `http://localhost:6080` |
+| **[Immich](./immich/)** | High-performance photo and video management | Active | `http://localhost:2283` |
+| **[NPM](./NPM/)** | Nginx Proxy Manager (Internal/External) | Active | `http://localhost:81` |
+| **[WordPress](./wordpress/)** | WordPress with MySQL (mcmurray.tech) | Active | Configured domain |
+| **[Nextcloud](./nextcloud/)** | Migrated to AIO | See folder | - |
 
-## 📋 Prerequisites
+## Prerequisites
 
-- **Docker Engine** >= 20.10.0
-- **Docker Compose** >= 2.0.0
-- **Available Ports**: Check each service's compose file
-- **System Requirements**: Minimum 2GB RAM, 10GB storage
+- Docker Engine >= 20.10.0
+- Docker Compose >= 2.0.0
+- Available Ports: Check each service's compose file
+- System Requirements: Minimum 2GB RAM, 10GB storage
 
 ### Installation Check
 
@@ -40,7 +40,7 @@ docker compose version
 docker info
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone Repository
 
@@ -74,13 +74,13 @@ Most services require environment variables. Create `.env` files as needed:
 echo "NPM_VERSION=latest" > NPM/.env
 ```
 
-## 🌐 Network Architecture
+## Network Architecture
 
 This collection uses a hybrid networking approach:
 
-- **`proxynet`** - External network for reverse proxy connectivity
-- **`backend`** - Internal networks for service isolation
-- **`br0`** - Bridge network for internal proxy manager
+- `proxynet` - External network for reverse proxy connectivity
+- `backend` - Internal networks for service isolation
+- `br0` - Bridge network for internal proxy manager
 
 ```bash
 # Create external networks (run once)
@@ -88,7 +88,7 @@ docker network create proxynet
 docker network create br0
 ```
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 Common environment variables across services:
 
@@ -98,7 +98,7 @@ Common environment variables across services:
 | `PUID/PGID` | User/Group IDs | `1000/1000` |
 | `*_VERSION` | Image versions | `latest` |
 
-## 🔧 Maintenance
+## Maintenance
 
 ### Updates
 
@@ -136,14 +136,14 @@ docker compose ps
 docker compose logs -t -f --tail=100
 ```
 
-## 🛡️ Security Considerations
+## Security Considerations
 
-- **Reverse Proxy**: Use NPM for SSL termination
-- **Networks**: Services use internal networks where possible
-- **Secrets**: Store sensitive data in `.env` files (git-ignored)
-- **Updates**: Regularly update images for security patches
+- Reverse Proxy: Use NPM for SSL termination
+- Networks: Services use internal networks where possible
+- Secrets: Store sensitive data in `.env` files (git-ignored)
+- Updates: Regularly update images for security patches
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please:
 
@@ -160,7 +160,7 @@ Contributions are welcome! Please:
 4. Update main README table
 5. Test deployment
 
-## 📚 Resources
+## Resources
 
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Best Practices](https://docs.docker.com/develop/best-practices/)
@@ -168,5 +168,5 @@ Contributions are welcome! Please:
 
 ---
 
-**Last Updated**: October 2024  
-**Maintainer**: [@Michael-XKCD](https://github.com/Michael-XKCD)
+Last Updated: October 2024  
+Maintainer: [@Michael-XKCD](https://github.com/Michael-XKCD)
