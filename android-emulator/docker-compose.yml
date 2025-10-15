@@ -1,31 +1,69 @@
 services:
   android-emulator:
+    image: budtmo/docker-android:emulator_14.0
     container_name: android-emulator
-    build:
-      context: .
-      args:
-        - API_LEVEL=34
-        - CMD_LINE_VERSION=11076708_latest
-        - IMG_TYPE=google_apis
+    platform: linux/amd64  # Ensures x86_64 compatibility
+    privileged: true
     network_mode: bridge
     ports:
-      - 5554:5554
-      - 5555:5555
+      - "6080:6080"    # noVNC web interface
+      - "5554:5554"    # Emulator console
+      - "5555:5555"    # ADB
     environment:
-      - DISABLE_ANIMATION=false
-      - DISABLE_HIDDEN_POLICY=true
-      - SKIP_AUTH=false
-      #- ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
-      - MEMORY=16384
-      - CORES=16
-    privileged: true
-    tty: true
-    stdin_open: true
+      # Device Configuration
+      - EMULATOR_DEVICE=Samsung Galaxy S10
+      - ANDROID_VERSION=14.0
+      - API_LEVEL=34
+      
+      # Performance Optimizations for Idle Games
+      - EMULATOR_ARGS=-memory 8192 -cores 8 -gpu swiftshader_indirect -no-audio -no-window
+      - RELAXED_SECURITY=true
+      - DISABLE_ANIMATIONS=true
+      
+      # Automation Settings
+      - AUTO_RECORD=false
+      - RECORDING_FILE_NAME=game_session
+      - APPIUM=true
+      
+      # Display Settings
+      - RESOLUTION=1920x1080
+      - DENSITY=480
+      
+      # Keep screen on for idle games
+      - SCREEN_ALWAYS_ON=true
+      
+      # Timezone (adjust as needed)
+      - TZ=America/New_York
     volumes:
-      - ./keys/adbkey:/root/.android/adbkey:ro
-      - ./keys/adbkey.pub:/root/.android/adbkey.pub:ro
-      - ./android_avd:/data
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - ./apks:/tmp/apks:rw              # For game APK files
+      - ./scripts:/tmp/scripts:rw        # For automation scripts
+      - ./game_data:/tmp/game_data:rw    # For game save data
+      - android_avd_data:/home/androidusr/.android  # Persistent AVD data
+    devices:
+      - /dev/kvm:/dev/kvm  # Hardware acceleration (Linux only)
+    restart: unless-stopped
     labels:
-      net.unraid.docker.icon: https://github.com/HQarroum/docker-android/raw/main/assets/icon.png
+      net.unraid.docker.icon: https://github.com/budtmo/docker-android/raw/master/assets/icon.png
+      
+  # Optional: Automation service for game management
+  game-automation:
+    image: python:3.11-slim
+    container_name: game-automation
+    platform: linux/amd64
+    depends_on:
+      - android-emulator
+    volumes:
+      - ./automation:/app
+      - ./apks:/apks:rw
+    working_dir: /app
+    command: tail -f /dev/null  # Keep container running
+    environment:
+      - ADB_SERVER_ADDRESS=android-emulator
+      - ADB_SERVER_PORT=5555
+    restart: unless-stopped
+    profiles: ["automation"]  # Only start with --profile automation
+
+# Named volume for persistent Android data
+volumes:
+  android_avd_data:
+    driver: local

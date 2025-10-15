@@ -1,0 +1,48 @@
+# Mac-compatible Android environment
+# Uses a simpler approach that works better on M4 Mac
+
+services:
+  # Lightweight Android testing environment
+  android-simple:
+    image: budtmo/docker-android:genymotion_10.0  # Lighter image
+    container_name: android-simple
+    platform: linux/amd64
+    privileged: true
+    network_mode: bridge
+    ports:
+      - "6080:6080"    # noVNC
+      - "5554:5554"    # Emulator console
+      - "5555:5555"    # ADB
+    environment:
+      # Minimal configuration for M4 Mac
+      - EMULATOR_DEVICE=Nexus 4
+      - ANDROID_VERSION=10.0
+      - API_LEVEL=29
+      - EMULATOR_ARGS=-memory 1024 -cores 1 -gpu off -no-audio -no-window
+      - RELAXED_SECURITY=true
+      - DISABLE_ANIMATIONS=true
+      - RESOLUTION=800x600  # Small resolution
+      - DENSITY=240
+    volumes:
+      - ./apks:/tmp/apks:rw
+      - ./game_data:/tmp/game_data:rw
+      - android_data_simple:/home/androidusr/.android
+    restart: unless-stopped
+    labels:
+      environment: mac-testing
+
+  # Alternative: Just ADB server for development
+  adb-server:
+    image: sorccu/adb:latest
+    container_name: adb-server
+    platform: linux/amd64
+    ports:
+      - "5037:5037"
+    privileged: true
+    restart: unless-stopped
+    profiles: ["adb-only"]
+    command: adb -a -P 5037 server nodaemon
+
+volumes:
+  android_data_simple:
+    driver: local

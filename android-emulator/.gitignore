@@ -1,0 +1,53 @@
+# Android Emulator Project .gitignore
+
+# APK files - don't commit game files
+apks/*.apk
+!apks/.gitkeep
+
+# Game data and screenshots
+game_data/*
+!game_data/.gitkeep
+
+# Private ADB keys (if regenerated)
+keys/adbkey*
+
+# Docker volumes and cache
+.docker/
+docker-compose.override.yml
+
+# Python cache
+automation/__pycache__/
+automation/*.pyc
+automation/.pytest_cache/
+automation/venv/
+
+# Logs
+*.log
+automation/*.log
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
+.env.production

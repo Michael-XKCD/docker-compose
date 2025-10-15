@@ -1,0 +1,4 @@
+# Python dependencies for game automation
+requests>=2.31.0
+Pillow>=10.0.0  # For screenshot analysis if needed
+pyyaml>=6.0     # For configuration files
