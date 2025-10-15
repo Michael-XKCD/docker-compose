@@ -1,0 +1,138 @@
+# LibreChat Docker Compose - Unraid Configuration
+# Based on LibreChat official docker-compose with custom network configuration
+
+networks:
+  backend:
+    internal: true
+  egress:
+    internal: false
+  proxynet:
+    external: true
+
+services:
+  librechat-app:
+    container_name: librechat_app
+    image: ghcr.io/danny-avila/librechat-dev:latest
+    restart: always
+    depends_on:
+      - mongodb
+        # condition: service_healthy
+      - meilisearch
+        # condition: service_healthy
+      - rag_api
+        # condition: service_started
+    networks:
+      - proxynet
+      - backend
+      - egress
+    ports:
+      - "3080:3080"
+    user: "${UID}:${GID}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - PUID=99
+      - PGID=100
+      - UMASK=022
+      - TZ=America/Los_Angeles
+    volumes:
+      - ${APPDATA_PATH}/images:/app/client/public/images
+      - ${APPDATA_PATH}/uploads:/app/uploads
+      - ${APPDATA_PATH}/logs:/app/logs
+      - ${APPDATA_PATH}/logs:/app/api/logs
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      net.unraid.docker.webui: http://${UI_URL}
+      net.unraid.docker.icon: https://raw.githubusercontent.com/danny-avila/LibreChat/main/client/public/assets/LibreChat.svg
+
+  mongodb:
+    container_name: librechat_mongodb
+    image: mongo:7.0
+    restart: always
+    user: "${UID}:${GID}"
+    networks:
+      - backend
+    volumes:
+      - ${APPDATA_PATH}/mongodb:/data/db
+      - /etc/localtime:/etc/localtime:ro
+    command: mongod --auth
+    environment:
+      - PUID=99
+      - PGID=100
+      - UMASK=022
+      - TZ=America/Los_Angeles
+    # healthcheck:
+    #   test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 20s
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/mongodb/mongodb.png
+
+  meilisearch:
+    container_name: librechat_meilisearch
+    image: getmeili/meilisearch:v1.12.3
+    restart: always
+    user: "${UID}:${GID}"
+    networks:
+      - backend
+    environment:
+      - PUID=99
+      - PGID=100
+      - UMASK=022
+      - TZ=America/Los_Angeles
+    volumes:
+      - ${APPDATA_PATH}/meilisearch:/meili_data
+      - /etc/localtime:/etc/localtime:ro
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
+    labels:
+      net.unraid.docker.icon: https://github.com/meilisearch/meilisearch/raw/main/assets/meilisearch-logo.svg
+
+  vectordb:
+    container_name: librechat_vectordb
+    image: pgvector/pgvector:0.8.0-pg15-trixie
+    restart: always
+    networks:
+      - backend
+    environment:
+      - PUID=99
+      - PGID=100
+      - UMASK=022
+      - TZ=America/Los_Angeles
+    volumes:
+      - ${APPDATA_PATH}/vectordb:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -d '${VECTOR_DB_NAME}' -U '${VECTOR_DB_USER}' || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 30s
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/postgres/Postgresql_elephant.png
+
+  rag_api:
+    container_name: librechat_rag_api
+    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    restart: always
+    depends_on:
+      - vectordb
+        # condition: service_healthy
+    networks:
+      - backend
+      - egress
+    environment:
+      - PUID=99
+      - PGID=100
+      - UMASK=022
+      - TZ=America/Los_Angeles
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/danny-avila/LibreChat/main/docs/assets/rag-api-icon.png
