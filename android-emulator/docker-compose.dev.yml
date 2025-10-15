@@ -1,0 +1,73 @@
+# Development Configuration for M4 Mac
+# Use this for local development and testing
+
+services:
+  android-emulator:
+    image: budtmo/docker-android:emulator_14.0
+    container_name: android-emulator-dev
+    platform: linux/amd64  # Force AMD64 - budtmo image doesn't support ARM64
+    privileged: true
+    network_mode: bridge
+    ports:
+      - "6080:6080"    # noVNC web interface
+      - "5554:5554"    # Emulator console
+      - "5555:5555"    # ADB
+    environment:
+      # Lightweight device for development
+      - EMULATOR_DEVICE=Nexus 5
+      - ANDROID_VERSION=14.0
+      - API_LEVEL=34
+      
+      # Minimal resources for M4 Mac compatibility
+      - EMULATOR_ARGS=-memory 2048 -cores 2 -gpu off -no-audio -no-snapshot
+      - RELAXED_SECURITY=true
+      - DISABLE_ANIMATIONS=true
+      
+      # Development settings
+      - AUTO_RECORD=false
+      - APPIUM=true
+      
+      # Display Settings (smaller for dev)
+      - RESOLUTION=1280x720
+      - DENSITY=320
+      
+      # Development timezone
+      - TZ=America/New_York
+    volumes:
+      - ./apks:/tmp/apks:rw
+      - ./scripts:/tmp/scripts:rw
+      - ./game_data:/tmp/game_data:rw
+      - android_avd_data_dev:/home/androidusr/.android
+    # Note: /dev/kvm not available on macOS
+    restart: unless-stopped
+    labels:
+      net.unraid.docker.icon: https://github.com/budtmo/docker-android/raw/master/assets/icon.png
+      environment: development
+
+  # Development automation service
+  game-automation:
+    image: python:3.11-slim
+    container_name: game-automation-dev
+    platform: linux/amd64  # Match emulator platform
+    depends_on:
+      - android-emulator
+    volumes:
+      - ./automation:/app
+      - ./apks:/apks:rw
+    working_dir: /app
+    command: |
+      sh -c "
+        pip install -r requirements.txt &&
+        python game_manager.py
+      "
+    environment:
+      - ADB_SERVER_ADDRESS=android-emulator
+      - ADB_SERVER_PORT=5555
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    profiles: ["automation"]
+
+# Development volumes
+volumes:
+  android_avd_data_dev:
+    driver: local

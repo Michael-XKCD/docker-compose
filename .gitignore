@@ -20,3 +20,12 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 .apdisk
+
+# Environment files
+.env
+*.env
+.env.local
+.env.*.local
+
+# Warp analysis files
+warp.md

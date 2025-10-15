@@ -1,0 +1,125 @@
+# Production Configuration for x86 Xeon Server
+# Optimized for high performance idle game automation
+
+services:
+  android-emulator:
+    image: budtmo/docker-android:emulator_14.0
+    container_name: android-emulator-prod
+    platform: linux/amd64  # x86_64 for Xeon server
+    privileged: true
+    network_mode: bridge
+    ports:
+      - "6080:6080"    # noVNC web interface
+      - "5554:5554"    # Emulator console
+      - "5555:5555"    # ADB
+    environment:
+      # High-performance device configuration
+      - EMULATOR_DEVICE=Samsung Galaxy S10
+      - ANDROID_VERSION=14.0
+      - API_LEVEL=34
+      
+      # Maximum performance for idle games
+      - EMULATOR_ARGS=-memory 16384 -cores 16 -gpu swiftshader_indirect -no-audio -no-window
+      - RELAXED_SECURITY=true
+      - DISABLE_ANIMATIONS=true
+      
+      # Production automation settings
+      - AUTO_RECORD=false
+      - RECORDING_FILE_NAME=game_session
+      - APPIUM=true
+      
+      # Full HD display for better game visibility
+      - RESOLUTION=1920x1080
+      - DENSITY=480
+      
+      # Keep screen on for idle games
+      - SCREEN_ALWAYS_ON=true
+      
+      # Production timezone
+      - TZ=America/New_York
+      
+      # Production specific settings
+      - ENABLE_VNC=true
+      - VNC_PASSWORD=gameautomation123
+    volumes:
+      - ./apks:/tmp/apks:rw
+      - ./scripts:/tmp/scripts:rw
+      - ./game_data:/tmp/game_data:rw
+      - android_avd_data_prod:/home/androidusr/.android
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # X11 forwarding for Linux
+    devices:
+      - /dev/kvm:/dev/kvm  # Hardware acceleration (Linux only)
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 20G
+          cpus: '16'
+        reservations:
+          memory: 16G
+          cpus: '8'
+    labels:
+      net.unraid.docker.icon: https://github.com/budtmo/docker-android/raw/master/assets/icon.png
+      environment: production
+      purpose: idle-game-automation
+
+  # Production automation service with enhanced monitoring
+  game-automation:
+    image: python:3.11-slim
+    container_name: game-automation-prod
+    platform: linux/amd64
+    depends_on:
+      - android-emulator
+    volumes:
+      - ./automation:/app
+      - ./apks:/apks:rw
+      - ./game_data:/tmp/game_data:rw
+    working_dir: /app
+    command: |
+      sh -c "
+        apt-get update -q &&
+        apt-get install -y android-tools-adb &&
+        pip install -r requirements.txt &&
+        python game_manager.py
+      "
+    environment:
+      - ADB_SERVER_ADDRESS=android-emulator
+      - ADB_SERVER_PORT=5555
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    profiles: ["automation"]
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '2'
+
+  # Optional: Monitoring service for production
+  monitoring:
+    image: prom/node-exporter:latest
+    container_name: android-monitoring
+    platform: linux/amd64
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    profiles: ["monitoring"]
+    labels:
+      purpose: system-monitoring
+
+# Production volumes with better performance
+volumes:
+  android_avd_data_prod:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/android-emulator-data  # Adjust path for your server
