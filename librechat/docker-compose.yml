@@ -24,10 +24,9 @@ services:
     networks:
       - proxynet
       - backend
-      - egress
     ports:
       - "3080:3080"
-    user: "${UID}:${GID}"
+    user: "99:100"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -49,7 +48,7 @@ services:
     container_name: librechat_mongodb
     image: mongo:7.0
     restart: always
-    user: "${UID}:${GID}"
+    user: "99:100"
     networks:
       - backend
     volumes:
@@ -74,7 +73,7 @@ services:
     container_name: librechat_meilisearch
     image: getmeili/meilisearch:v1.12.3
     restart: always
-    user: "${UID}:${GID}"
+    user: "99:100"
     networks:
       - backend
     environment:
