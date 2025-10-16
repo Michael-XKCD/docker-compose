@@ -30,10 +30,14 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PWD}@mongodb:27017/LibreChat?authSource=admin
+      - RAG_API_URL=http://rag_api:${RAG_PORT}
       - PUID=99
       - PGID=100
       - UMASK=022
       - TZ=America/Los_Angeles
+    env_file:
+      - ${ENVFILE}
     volumes:
       - ${APPDATA_PATH}/images:/app/client/public/images
       - ${APPDATA_PATH}/uploads:/app/uploads
@@ -56,10 +60,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     command: mongod --auth
     environment:
-      - PUID=99
-      - PGID=100
-      - UMASK=022
-      - TZ=America/Los_Angeles
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PWD}
     # healthcheck:
     #   test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
     #   interval: 10s
@@ -77,10 +79,9 @@ services:
     networks:
       - backend
     environment:
-      - PUID=99
-      - PGID=100
-      - UMASK=022
       - TZ=America/Los_Angeles
+    env_file:
+      - ${ENVFILE}
     volumes:
       - ${APPDATA_PATH}/meilisearch:/meili_data
       - /etc/localtime:/etc/localtime:ro
@@ -100,9 +101,11 @@ services:
     networks:
       - backend
     environment:
+      - POSTGRES_DB=${VECTOR_DB_NAME}
+      - POSTGRES_USER=${VECTOR_DB_USER}
+      - POSTGRES_PASSWORD=${VECTOR_DB_PASSWORD}
       - PUID=99
       - PGID=100
-      - UMASK=022
       - TZ=America/Los_Angeles
     volumes:
       - ${APPDATA_PATH}/vectordb:/var/lib/postgresql/data
@@ -127,10 +130,14 @@ services:
       - backend
       - egress
     environment:
+      - POSTGRES_DB=${VECTOR_DB_NAME}
+      - POSTGRES_USER=${VECTOR_DB_USER}
+      - POSTGRES_PASSWORD=${VECTOR_DB_PASSWORD}
       - PUID=99
       - PGID=100
-      - UMASK=022
       - TZ=America/Los_Angeles
+    env_file:
+      - ${ENVFILE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
     labels:
