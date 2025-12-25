@@ -18,9 +18,8 @@
 |---------|-------------|--------|--------|
 | **[Android Emulator](./android-emulator/)** | Headless Android emulator for testing | Active | `http://localhost:6080` |
 | **[Immich](./immich/)** | High-performance photo and video management | Active | `http://localhost:2283` |
+| **[LibreChat](./librechat/)** | Self-hosted ChatGPT alternative | Active | `http://localhost:3080` |
 | **[NPM](./NPM/)** | Nginx Proxy Manager (Internal/External) | Active | `http://localhost:81` |
-| **[WordPress](./wordpress/)** | WordPress with MySQL (mcmurray.tech) | Active | Configured domain |
-| **[Nextcloud](./nextcloud/)** | Migrated to AIO | See folder | - |
 
 ## Prerequisites
 
@@ -120,7 +119,7 @@ docker image prune
 docker run --rm -v immich_pgdata:/data -v $(pwd):/backup ubuntu tar czf /backup/immich-backup.tar.gz /data
 
 # List all volumes
-docker volume ls | grep -E '(immich|wordpress|npm)'
+docker volume ls | grep -E '(immich|librechat|npm)'
 ```
 
 ### Monitoring
