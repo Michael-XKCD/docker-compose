@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  dumbpad:
+    build: .
+    image: dumbpad-nonroot:${DUMBPAD_VERSION}
+    container_name: dumbpad
+    user: "99:100"
+    restart: unless-stopped
+    network_mode: bridge
+    pids_limit: 2048
+    ports:
+      - "3005:3000"
+    volumes:
+      - ${APPDATA_PATH}/dumbpad:/app/data:rw
+    environment:
+      TZ: America/Los_Angeles
+      DUMBPAD_PIN: "${PIN}"
+    labels:
+      net.unraid.docker.webui: "http://[IP]:[PORT:3005]"
+      net.unraid.docker.icon: "https://raw.githubusercontent.com/devzwf/unraid-docker-templates/main/images/dumbpad-logo.png"
+    
