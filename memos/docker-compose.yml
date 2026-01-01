@@ -8,7 +8,7 @@ services:
     ports:
       - "5230:5230"
     volumes:
-      - ${APPDATA_PATH:}/memos:/var/opt/memos
+      - ${APPDATA_PATH}/memos:/var/opt/memos
     environment:
       TZ: America/Los_Angeles
       MEMOS_MODE: prod
