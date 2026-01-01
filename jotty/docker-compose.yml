@@ -1,13 +1,17 @@
 # Preflight: BASE="${APPDATA_PATH}/jotty"; mkdir -p "$BASE/config" "$BASE/cache" "$BASE/data/users" "$BASE/data/checklists" "$BASE/data/notes" "$BASE/data/sharing" "$BASE/data/encryption"
 
+networks:
+  proxynet:
+    external: true
+
 services:
   jotty:
     image: ghcr.io/fccview/jotty:${JOTTY_VERSION}
     container_name: jotty
     restart: unless-stopped
+    networks:
+      - proxynet
     user: "99:100"
-    ports:
-      - "1122:3000"
     volumes:
       - ${APPDATA_PATH}/jotty/data:/app/data:rw
       - ${APPDATA_PATH}/jotty/config:/app/config:rw
