@@ -5,7 +5,6 @@ services:
     image: ghcr.io/fccview/jotty:${JOTTY_VERSION}
     container_name: jotty
     restart: unless-stopped
-    user: "99:100"
     ports:
       - "1122:3000"
     volumes:
