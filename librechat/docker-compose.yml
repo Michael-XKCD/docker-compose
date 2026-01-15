@@ -172,7 +172,7 @@ services:
 
   firecrawl-playwright:
     container_name: librechat_firecrawl_playwright
-    image: ghcr.io/mendableai/firecrawl-playwright-service:latest
+    image: trieve/puppeteer-service-ts:v0.0.6
     restart: unless-stopped
     networks:
       - backend
@@ -192,12 +192,20 @@ services:
     networks:
       - backend
       - egress
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - REDIS_URL=redis://firecrawl-redis:6379
       - REDIS_RATE_LIMIT_URL=redis://firecrawl-redis:6379
-      - PLAYWRIGHT_MICROSERVICE_URL=http://firecrawl-playwright:3000/scrape
+      - PLAYWRIGHT_MICROSERVICE_URL=http://firecrawl-playwright:3000
       - PORT=3002
       - HOST=0.0.0.0
       - NUM_WORKERS_PER_QUEUE=4
+      - USE_DB_AUTHENTICATION=false
+    command: ["pnpm", "run", "start:production"]
     labels:
       net.unraid.docker.icon: https://www.firecrawl.dev/favicon.ico
