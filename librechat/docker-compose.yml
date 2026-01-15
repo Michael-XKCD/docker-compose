@@ -62,7 +62,7 @@ services:
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - TZ=America/Los_Angeles
     volumes:
-      - ./librechat.yaml:/app/librechat.yaml:ro
+      - ${APPDATA_PATH}/librechat/librechat.yaml:/app/librechat.yaml:ro
       - ${APPDATA_PATH}/librechat/images:/app/client/public/images
       - ${APPDATA_PATH}/librechat/uploads:/app/uploads
       - ${APPDATA_PATH}/librechat/logs:/app/api/logs
