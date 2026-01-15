@@ -170,6 +170,15 @@ services:
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/A75G/docker-templates/master/templates/icons/redis.png
 
+  firecrawl-rabbitmq:
+    container_name: librechat_firecrawl_rabbitmq
+    image: rabbitmq:3-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    labels:
+      net.unraid.docker.icon: https://www.rabbitmq.com/img/rabbitmq-logo.svg
+
   firecrawl-playwright:
     container_name: librechat_firecrawl_playwright
     image: trieve/puppeteer-service-ts:v0.0.6
@@ -188,6 +197,7 @@ services:
     restart: unless-stopped
     depends_on:
       - firecrawl-redis
+      - firecrawl-rabbitmq
       - firecrawl-playwright
     networks:
       - backend
@@ -207,5 +217,6 @@ services:
       - NUM_WORKERS_PER_QUEUE=4
       - USE_DB_AUTHENTICATION=false
       - NUQ_DATABASE_URL=postgresql://${VECTOR_DB_USER}:${VECTOR_DB_PASSWORD}@vectordb:5432/${VECTOR_DB_NAME}
+      - NUQ_RABBITMQ_URL=amqp://firecrawl-rabbitmq:5672
     labels:
       net.unraid.docker.icon: https://www.firecrawl.dev/favicon.ico
