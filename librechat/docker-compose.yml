@@ -1,28 +1,31 @@
-# LibreChat Docker Compose - Unraid Configuration
-# Based on LibreChat official docker-compose with custom network configuration
+# Based on LibreChat official docker-compose
+#
+# Preflight:
+# mkdir -p "$./librechat" "./librechat/images" "./librechat/uploads" "./librechat/logs" "./librechat/mongodb" "./librechat/meilisearch" "./librechat/vectordb"
 
 networks:
   backend:
     internal: true
   egress:
     internal: false
-  proxynet:
-    external: true
+  # proxynet:
+  #   external: true
 
 services:
   librechat-app:
     container_name: librechat_app
-    image: ghcr.io/danny-avila/librechat-dev:latest
+    image: ghcr.io/danny-avila/librechat-dev:${LIBRECHAT_VERSION:-latest}
     restart: unless-stopped
     depends_on:
-      - mongodb
-        # condition: service_healthy
-      - meilisearch
-        # condition: service_healthy
-      - rag_api
-        # condition: service_started
+      mongodb:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+      rag_api:
+        condition: service_started
     networks:
-      - proxynet
+      # - proxynet  # Uncomment when using reverse proxy (NPM)
+      - egress     # Needed to reach AI APIs (OpenAI, Anthropic, etc.)
       - backend
     ports:
       - "3080:3080"
@@ -39,10 +42,9 @@ services:
     env_file:
       - ${ENVFILE}
     volumes:
-      - ${APPDATA_PATH}/images:/app/client/public/images
-      - ${APPDATA_PATH}/uploads:/app/uploads
-      - ${APPDATA_PATH}/logs:/app/logs
-      - ${APPDATA_PATH}/logs:/app/api/logs
+      - ${APPDATA_PATH}/librechat/images:/app/client/public/images
+      - ${APPDATA_PATH}/librechat/uploads:/app/uploads
+      - ${APPDATA_PATH}/librechat/logs:/app/logs
       - /etc/localtime:/etc/localtime:ro
     labels:
       net.unraid.docker.webui: http://${UI_URL}
@@ -56,18 +58,18 @@ services:
     networks:
       - backend
     volumes:
-      - ${APPDATA_PATH}/mongodb:/data/db
+      - ${APPDATA_PATH}/librechat/mongodb:/data/db
       - /etc/localtime:/etc/localtime:ro
     command: mongod --auth
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PWD}
-    # healthcheck:
-    #   test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
-    #   start_period: 20s
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/mongodb/mongodb.png
 
@@ -83,14 +85,14 @@ services:
     env_file:
       - ${ENVFILE}
     volumes:
-      - ${APPDATA_PATH}/meilisearch:/meili_data
+      - ${APPDATA_PATH}/librechat/meilisearch:/meili_data
       - /etc/localtime:/etc/localtime:ro
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 10s
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     labels:
       net.unraid.docker.icon: https://github.com/meilisearch/meilisearch/raw/main/assets/meilisearch-logo.svg
 
@@ -98,6 +100,7 @@ services:
     container_name: librechat_vectordb
     image: pgvector/pgvector:0.8.0-pg15-trixie
     restart: unless-stopped
+    user: "99:100"
     networks:
       - backend
     environment:
@@ -108,24 +111,24 @@ services:
       - PGID=100
       - TZ=America/Los_Angeles
     volumes:
-      - ${APPDATA_PATH}/vectordb:/var/lib/postgresql/data
+      - ${APPDATA_PATH}/librechat/vectordb:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready -d '${VECTOR_DB_NAME}' -U '${VECTOR_DB_USER}' || exit 1"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
-    #   start_period: 30s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d '${VECTOR_DB_NAME}' -U '${VECTOR_DB_USER}' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/postgres/Postgresql_elephant.png
 
   rag_api:
     container_name: librechat_rag_api
-    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:${LIBRECHAT_VERSION:-latest}
     restart: unless-stopped
     depends_on:
-      - vectordb
-        # condition: service_healthy
+      vectordb:
+        condition: service_healthy
     networks:
       - backend
       - egress
