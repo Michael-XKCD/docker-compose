@@ -67,6 +67,7 @@ services:
       - ${APPDATA_PATH}/librechat/images:/app/client/public/images
       - ${APPDATA_PATH}/librechat/uploads:/app/uploads
       - ${APPDATA_PATH}/librechat/logs:/app/api/logs
+      - ${APPDATA_PATH}/librechat/logs:/app/logs
       - /etc/localtime:/etc/localtime:ro
     labels:
       net.unraid.docker.webui: http://${UI_URL}
@@ -151,6 +152,7 @@ services:
       - backend
       - egress
     environment:
+      - DB_HOST=vectordb
       - POSTGRES_DB=${VECTOR_DB_NAME}
       - POSTGRES_USER=${VECTOR_DB_USER}
       - POSTGRES_PASSWORD=${VECTOR_DB_PASSWORD}
