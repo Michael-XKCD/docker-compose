@@ -184,7 +184,7 @@ services:
 
   firecrawl:
     container_name: librechat_firecrawl
-    image: ghcr.io/mendableai/firecrawl:latest
+    image: ghcr.io/firecrawl/firecrawl:latest
     restart: unless-stopped
     depends_on:
       - firecrawl-redis
