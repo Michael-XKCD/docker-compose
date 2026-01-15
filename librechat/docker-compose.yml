@@ -125,7 +125,6 @@ services:
     container_name: librechat_vectordb
     image: pgvector/pgvector:0.8.0-pg15-trixie
     restart: unless-stopped
-    user: "99:100"
     networks:
       - backend
     environment:
