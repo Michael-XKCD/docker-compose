@@ -206,5 +206,6 @@ services:
       - HOST=0.0.0.0
       - NUM_WORKERS_PER_QUEUE=4
       - USE_DB_AUTHENTICATION=false
+      - NUQ_DATABASE_URL=postgresql://${VECTOR_DB_USER}:${VECTOR_DB_PASSWORD}@vectordb:5432/${VECTOR_DB_NAME}
     labels:
       net.unraid.docker.icon: https://www.firecrawl.dev/favicon.ico
