@@ -172,7 +172,7 @@ services:
 
   firecrawl-playwright:
     container_name: librechat_firecrawl_playwright
-    image: trieve/puppeteer-service-ts:v0.0.6
+    image: ghcr.io/mendableai/firecrawl-playwright-service:latest
     restart: unless-stopped
     networks:
       - backend
@@ -184,17 +184,18 @@ services:
 
   firecrawl:
     container_name: librechat_firecrawl
-    image: trieve/firecrawl:v0.0.46
+    image: ghcr.io/mendableai/firecrawl:latest
     restart: unless-stopped
     depends_on:
       - firecrawl-redis
       - firecrawl-playwright
     networks:
       - backend
+      - egress
     environment:
       - REDIS_URL=redis://firecrawl-redis:6379
       - REDIS_RATE_LIMIT_URL=redis://firecrawl-redis:6379
-      - PLAYWRIGHT_MICROSERVICE_URL=http://firecrawl-playwright:3000
+      - PLAYWRIGHT_MICROSERVICE_URL=http://firecrawl-playwright:3000/scrape
       - PORT=3002
       - HOST=0.0.0.0
       - NUM_WORKERS_PER_QUEUE=4
