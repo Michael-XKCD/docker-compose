@@ -206,6 +206,5 @@ services:
       - HOST=0.0.0.0
       - NUM_WORKERS_PER_QUEUE=4
       - USE_DB_AUTHENTICATION=false
-    command: ["pnpm", "run", "start:production"]
     labels:
       net.unraid.docker.icon: https://www.firecrawl.dev/favicon.ico
