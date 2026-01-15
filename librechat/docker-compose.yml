@@ -60,6 +60,9 @@ services:
       - REFRESH_TOKEN_EXPIRY=${REFRESH_TOKEN_EXPIRY}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - SEARXNG_INSTANCE_URL=${SEARXNG_INSTANCE_URL}
+      - SERPER_API_KEY=${SERPER_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
       - TZ=America/Los_Angeles
     volumes:
       - ${APPDATA_PATH}/librechat/librechat.yaml:/app/librechat.yaml:ro
