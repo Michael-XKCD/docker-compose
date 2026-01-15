@@ -1,7 +1,7 @@
 # Based on LibreChat official docker-compose
 #
 # Preflight:
-# mkdir -p "$./librechat" "./librechat/images" "./librechat/uploads" "./librechat/logs" "./librechat/mongodb" "./librechat/meilisearch" "./librechat/vectordb"
+# mkdir -p "${APPDATA_PATH}/librechat"/{images,uploads,logs,mongodb,meilisearch,vectordb,searxng}
 
 networks:
   backend:
@@ -62,6 +62,7 @@ services:
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - TZ=America/Los_Angeles
     volumes:
+      - ./librechat.yaml:/app/librechat.yaml:ro
       - ${APPDATA_PATH}/librechat/images:/app/client/public/images
       - ${APPDATA_PATH}/librechat/uploads:/app/uploads
       - ${APPDATA_PATH}/librechat/logs:/app/api/logs
@@ -143,3 +144,59 @@ services:
       - /etc/localtime:/etc/localtime:ro
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/danny-avila/LibreChat/main/docs/assets/rag-api-icon.png
+
+  searxng:
+    container_name: librechat_searxng
+    image: searxng/searxng:latest
+    restart: unless-stopped
+    networks:
+      - backend
+      - egress
+    environment:
+      - SEARXNG_BASE_URL=http://searxng:8080
+      - TZ=America/Los_Angeles
+    volumes:
+      - ${APPDATA_PATH}/librechat/searxng:/etc/searxng:rw
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/searxng/searxng/master/src/brand/searxng-wordmark.svg
+
+  firecrawl-redis:
+    container_name: librechat_firecrawl_redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    labels:
+      net.unraid.docker.icon: https://raw.githubusercontent.com/A75G/docker-templates/master/templates/icons/redis.png
+
+  firecrawl-playwright:
+    container_name: librechat_firecrawl_playwright
+    image: trieve/puppeteer-service-ts:v0.0.6
+    restart: unless-stopped
+    networks:
+      - backend
+      - egress
+    environment:
+      - PORT=3000
+    labels:
+      net.unraid.docker.icon: https://playwright.dev/img/playwright-logo.svg
+
+  firecrawl:
+    container_name: librechat_firecrawl
+    image: trieve/firecrawl:v0.0.46
+    restart: unless-stopped
+    depends_on:
+      - firecrawl-redis
+      - firecrawl-playwright
+    networks:
+      - backend
+    environment:
+      - REDIS_URL=redis://firecrawl-redis:6379
+      - REDIS_RATE_LIMIT_URL=redis://firecrawl-redis:6379
+      - PLAYWRIGHT_MICROSERVICE_URL=http://firecrawl-playwright:3000
+      - PORT=3002
+      - HOST=0.0.0.0
+      - NUM_WORKERS_PER_QUEUE=4
+    labels:
+      net.unraid.docker.icon: https://www.firecrawl.dev/favicon.ico
