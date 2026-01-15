@@ -28,19 +28,44 @@ services:
       - egress     # Needed to reach AI APIs (OpenAI, Anthropic, etc.)
       - backend
     ports:
-      - "3080:3080"
+      - "${PORT}:${PORT}"
     user: "99:100"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
+      - HOST=${HOST}
+      - PORT=${PORT}
       - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PWD}@mongodb:27017/LibreChat?authSource=admin
+      - DOMAIN_CLIENT=${DOMAIN_CLIENT}
+      - DOMAIN_SERVER=${DOMAIN_SERVER}
       - RAG_API_URL=http://rag_api:${RAG_PORT}
-      - PUID=99
-      - PGID=100
-      - UMASK=022
+      - RAG_PORT=${RAG_PORT}
+      - MEILI_HOST=http://meilisearch:7700
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - SEARCH=${SEARCH}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DEBUG_LOGGING=${DEBUG_LOGGING:-false}
+      - DEBUG_CONSOLE=${DEBUG_CONSOLE:-true}
+      - DEBUG_OPENAI=${DEBUG_OPENAI:-false}
+      - DEBUG_PLUGINS=${DEBUG_PLUGINS:-true}
+      - CREDS_KEY=${CREDS_KEY}
+      - CREDS_IV=${CREDS_IV}
+      - APP_TITLE=${APP_TITLE:-LibreChat}
+      - HELP_AND_FAQ_URL=${HELP_AND_FAQ_URL:-https://librechat.ai}
+      - ALLOW_SHARED_LINKS=${ALLOW_SHARED_LINKS:-false}
+      - ALLOW_SHARED_LINKS_PUBLIC=${ALLOW_SHARED_LINKS_PUBLIC:-false}
+      - ALLOW_EMAIL_LOGIN=${ALLOW_EMAIL_LOGIN}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION}
+      - ALLOW_SOCIAL_LOGIN=${ALLOW_SOCIAL_LOGIN}
+      - ALLOW_SOCIAL_REGISTRATION=${ALLOW_SOCIAL_REGISTRATION}
+      - ALLOW_PASSWORD_RESET=${ALLOW_PASSWORD_RESET}
+      - ALLOW_UNVERIFIED_EMAIL_LOGIN=${ALLOW_UNVERIFIED_EMAIL_LOGIN}
+      - SESSION_EXPIRY=${SESSION_EXPIRY}
+      - REFRESH_TOKEN_EXPIRY=${REFRESH_TOKEN_EXPIRY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - TZ=America/Los_Angeles
-    env_file:
-      - ${ENVFILE}
     volumes:
       - ${APPDATA_PATH}/librechat/images:/app/client/public/images
       - ${APPDATA_PATH}/librechat/uploads:/app/uploads
@@ -82,8 +107,8 @@ services:
       - backend
     environment:
       - TZ=America/Los_Angeles
-    env_file:
-      - ${ENVFILE}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
     volumes:
       - ${APPDATA_PATH}/librechat/meilisearch:/meili_data
       - /etc/localtime:/etc/localtime:ro
@@ -107,8 +132,6 @@ services:
       - POSTGRES_DB=${VECTOR_DB_NAME}
       - POSTGRES_USER=${VECTOR_DB_USER}
       - POSTGRES_PASSWORD=${VECTOR_DB_PASSWORD}
-      - PUID=99
-      - PGID=100
       - TZ=America/Los_Angeles
     volumes:
       - ${APPDATA_PATH}/librechat/vectordb:/var/lib/postgresql/data
@@ -136,11 +159,9 @@ services:
       - POSTGRES_DB=${VECTOR_DB_NAME}
       - POSTGRES_USER=${VECTOR_DB_USER}
       - POSTGRES_PASSWORD=${VECTOR_DB_PASSWORD}
-      - PUID=99
-      - PGID=100
       - TZ=America/Los_Angeles
-    env_file:
-      - ${ENVFILE}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RAG_PORT=${RAG_PORT}
     volumes:
       - /etc/localtime:/etc/localtime:ro
     labels:
