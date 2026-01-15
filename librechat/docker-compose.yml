@@ -17,12 +17,9 @@ services:
     image: ghcr.io/danny-avila/librechat-dev:${LIBRECHAT_VERSION:-latest}
     restart: unless-stopped
     depends_on:
-      mongodb:
-        condition: service_healthy
-      meilisearch:
-        condition: service_healthy
-      rag_api:
-        condition: service_started
+      - mongodb
+      - meilisearch
+      - rag_api
     networks:
       # - proxynet  # Uncomment when using reverse proxy (NPM)
       - egress     # Needed to reach AI APIs (OpenAI, Anthropic, etc.)
@@ -89,12 +86,12 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PWD}
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+    # healthcheck:
+    #   test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 20s
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/mongodb/mongodb.png
 
@@ -112,12 +109,12 @@ services:
     volumes:
       - ${APPDATA_PATH}/librechat/meilisearch:/meili_data
       - /etc/localtime:/etc/localtime:ro
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
     labels:
       net.unraid.docker.icon: https://github.com/meilisearch/meilisearch/raw/main/assets/meilisearch-logo.svg
 
@@ -135,12 +132,12 @@ services:
     volumes:
       - ${APPDATA_PATH}/librechat/vectordb:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d '${VECTOR_DB_NAME}' -U '${VECTOR_DB_USER}' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -d '${VECTOR_DB_NAME}' -U '${VECTOR_DB_USER}' || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 30s
     labels:
       net.unraid.docker.icon: https://raw.githubusercontent.com/Flight777/unraid_justworks_templates/main/images/postgres/Postgresql_elephant.png
 
@@ -149,8 +146,7 @@ services:
     image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:${LIBRECHAT_VERSION:-latest}
     restart: unless-stopped
     depends_on:
-      vectordb:
-        condition: service_healthy
+      - vectordb
     networks:
       - backend
       - egress
