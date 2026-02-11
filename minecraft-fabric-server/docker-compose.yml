@@ -1,10 +1,19 @@
 # Preflight: BASE="${APPDATA_PATH}/minecraft-fabric"; mkdir -p "$BASE/world" "$BASE/mods" "$BASE/config" && mkdir -p "${BACKUP_PATH}/hourly" "${BACKUP_PATH}/daily"
 
+networks:
+  backend:
+    internal: true
+  egress:
+    internal: false
+
 services:
   minecraft-fabric:
     image: itzg/minecraft-server:${MC_IMAGE_VERSION:-latest}
     container_name: minecraft-fabric
     restart: unless-stopped
+    networks:
+      - backend
+      - egress
     stdin_open: true
     tty: true
     user: "99:100"
@@ -78,6 +87,8 @@ services:
     image: itzg/mc-backup:latest
     container_name: minecraft-backup-hourly
     restart: unless-stopped
+    networks:
+      - backend
     user: "99:100"
     depends_on:
       minecraft-fabric:
@@ -111,6 +122,8 @@ services:
     image: itzg/mc-backup:latest
     container_name: minecraft-backup-daily
     restart: unless-stopped
+    networks:
+      - backend
     user: "99:100"
     depends_on:
       minecraft-fabric:
