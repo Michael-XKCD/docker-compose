@@ -48,6 +48,7 @@ services:
       - LEVEL_TYPE=${LEVEL_TYPE:-minecraft:normal}
       - LEVEL=${LEVEL_NAME:-world}
       - ONLINE_MODE=${ONLINE_MODE:-true}
+      - MAX_TICK_TIME=-1
       
       # ---- Whitelist ----
       - ENABLE_WHITELIST=${ENABLE_WHITELIST:-false}
