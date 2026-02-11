@@ -1,0 +1,140 @@
+# Preflight: BASE="${APPDATA_PATH}/minecraft-fabric"; mkdir -p "$BASE/world" "$BASE/mods" "$BASE/config" && mkdir -p "${BACKUP_PATH}/hourly" "${BACKUP_PATH}/daily"
+
+services:
+  minecraft-fabric:
+    image: itzg/minecraft-server:${MC_IMAGE_VERSION:-latest}
+    container_name: minecraft-fabric
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: "99:100"
+    ports:
+      - "${MC_PORT:-25565}:25565"
+    volumes:
+      - ${APPDATA_PATH}/minecraft-fabric:/data:rw
+    environment:
+      # ---- Core Server Settings ----
+      - EULA=TRUE
+      - TYPE=FABRIC
+      - VERSION=${MC_VERSION}
+      - FABRIC_LOADER_VERSION=${FABRIC_LOADER_VERSION}
+      - TZ=America/Los_Angeles
+
+      # ---- Memory Settings ----
+      - MEMORY=${MC_MEMORY:-4G}
+      - USE_AIKAR_FLAGS=true
+
+      # ---- Server Properties ----
+      - SERVER_NAME=${SERVER_NAME:-Minecraft Fabric Server}
+      - MOTD=${MOTD:-A Minecraft Fabric Server}
+      - DIFFICULTY=${DIFFICULTY:-easy}
+      - MODE=${GAMEMODE:-survival}
+      - PVP=${PVP:-false}
+      - MAX_PLAYERS=${MAX_PLAYERS:-20}
+      - VIEW_DISTANCE=${VIEW_DISTANCE:-12}
+      - SIMULATION_DISTANCE=${SIMULATION_DISTANCE:-10}
+      - SPAWN_PROTECTION=${SPAWN_PROTECTION:-0}
+      - ALLOW_FLIGHT=${ALLOW_FLIGHT:-false}
+      - ENABLE_COMMAND_BLOCK=${ENABLE_COMMAND_BLOCK:-false}
+      - LEVEL_TYPE=${LEVEL_TYPE:-minecraft:normal}
+      - LEVEL=${LEVEL_NAME:-world}
+      - ONLINE_MODE=${ONLINE_MODE:-true}
+      
+      # ---- Whitelist ----
+      - ENABLE_WHITELIST=${ENABLE_WHITELIST:-false}
+      - WHITELIST=${WHITELIST:-}
+      - OPS=${OPS:-}
+
+      # ---- RCON for backups ----
+      - ENABLE_RCON=${ENABLE_RCON:-true}
+      - RCON_PORT=25575
+      - RCON_PASSWORD=${RCON_PASSWORD}
+
+      # ---- Performance ----
+      - SYNC_CHUNK_WRITES=false
+      - USE_NATIVE_TRANSPORT=true
+      - NETWORK_COMPRESSION_THRESHOLD=256
+
+      # ---- Pause Settings ----
+      - ENABLE_AUTOPAUSE=${ENABLE_AUTOPAUSE:-true}
+      - AUTOPAUSE_TIMEOUT_EST=${AUTOPAUSE_TIMEOUT_EST:-3600}
+      - AUTOPAUSE_TIMEOUT_INIT=${AUTOPAUSE_TIMEOUT_INIT:-600}
+      
+      # ---- Packwiz: Server downloads mods from your GitHub ----
+      - PACKWIZ_URL=${PACKWIZ_URL:-}
+
+    labels:
+      net.unraid.docker.webui: "http://[IP]:[PORT:25565]"
+      net.unraid.docker.icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/minecraft.png"
+    healthcheck:
+      test: mc-health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ---- Hourly Backups: 3-day retention ----
+  mc-backup-hourly:
+    image: itzg/mc-backup:latest
+    container_name: minecraft-backup-hourly
+    restart: unless-stopped
+    user: "99:100"
+    depends_on:
+      minecraft-fabric:
+        condition: service_healthy
+    volumes:
+      - ${APPDATA_PATH}/minecraft-fabric:/data:ro
+      - ${BACKUP_PATH}/hourly:/backups:rw
+    environment:
+      - TZ=America/Los_Angeles
+      # Schedule: Every hour
+      - BACKUP_INTERVAL=1h
+      # Source
+      - SRC_DIR=/data
+      - BACKUP_NAME=world-hourly
+      # Retention: 3 days, minimum 24 backups
+      - PRUNE_BACKUPS_DAYS=3
+      - PRUNE_BACKUPS_COUNT=24
+      # Compression
+      - TAR_COMPRESS_METHOD=gzip
+      # RCON for safe backups
+      - RCON_HOST=minecraft-fabric
+      - RCON_PORT=25575
+      - RCON_PASSWORD=${RCON_PASSWORD}
+      # Skip backup if server is paused (no players)
+      - PAUSE_IF_NO_PLAYERS=true
+    labels:
+      net.unraid.docker.icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/duplicati.png"
+
+  # ---- Daily Backups: 30-day retention ----
+  mc-backup-daily:
+    image: itzg/mc-backup:latest
+    container_name: minecraft-backup-daily
+    restart: unless-stopped
+    user: "99:100"
+    depends_on:
+      minecraft-fabric:
+        condition: service_healthy
+    volumes:
+      - ${APPDATA_PATH}/minecraft-fabric:/data:ro
+      - ${BACKUP_PATH}/daily:/backups:rw
+    environment:
+      - TZ=America/Los_Angeles
+      # Schedule: Every day at 4 AM
+      - BACKUP_CRON=0 4 * * *
+      # Source
+      - SRC_DIR=/data
+      - BACKUP_NAME=world-daily
+      # Retention: 30 days, minimum 7 backups
+      - PRUNE_BACKUPS_DAYS=30
+      - PRUNE_BACKUPS_COUNT=7
+      # Compression
+      - TAR_COMPRESS_METHOD=gzip
+      # RCON for safe backups
+      - RCON_HOST=minecraft-fabric
+      - RCON_PORT=25575
+      - RCON_PASSWORD=${RCON_PASSWORD}
+      # Skip backup if server is paused (no players)
+      - PAUSE_IF_NO_PLAYERS=true
+    labels:
+      net.unraid.docker.icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/duplicati.png"
