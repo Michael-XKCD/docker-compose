@@ -6,16 +6,6 @@ hash = "ca3ae2608987185814c118388f28057f729d866ee1abbc97f3650141d213fa35"
 metafile = true
 
 [[files]]
-file = "mods/betterf3.pw.toml"
-hash = "8b1e7e1d6edd89356541f1c817f07d8cb1edc78bb5de22ad17b4adbc40ee1ee3"
-metafile = true
-
-[[files]]
-file = "mods/cloth-config.pw.toml"
-hash = "a06ef129798265e0d7249426fb0ed5c506725b0460dc3dfdb975b8978480895e"
-metafile = true
-
-[[files]]
 file = "mods/collective.pw.toml"
 hash = "c2a61b492dd0d7a156e15b7572adb40552b94c09658cc3c6d7faf99288d094c7"
 metafile = true
@@ -73,6 +63,11 @@ metafile = true
 [[files]]
 file = "mods/malilib.pw.toml"
 hash = "6324b634d5e464cf2606cce4e1d9b923701cad31764858d982fe0738129e0e4e"
+metafile = true
+
+[[files]]
+file = "mods/minihud.pw.toml"
+hash = "6d26fbac2dca7845d5de9e5fbbe3dbcb7541ccb952e4f5f14a92e618d5448965"
 metafile = true
 
 [[files]]

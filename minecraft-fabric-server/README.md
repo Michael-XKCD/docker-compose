@@ -2,6 +2,10 @@
 
 A Docker-based Minecraft Fabric server for Unraid with automatic mod syncing, scheduled backups, and performance optimizations.
 
+## Versions
+**Minecraft Version:** 1.21.11
+**Fabric Version:** 0.18.4
+
 ## Features
 
 - **Fabric Mod Loader** - Lightweight, fast modding platform
@@ -33,7 +37,7 @@ A Docker-based Minecraft Fabric server for Unraid with automatic mod syncing, sc
 | Mod | Side | Purpose |
 |-----|------|---------|
 | [AppleSkin](https://modrinth.com/mod/appleskin) | Both | Shows food/saturation values |
-| [BetterF3](https://modrinth.com/mod/betterf3) | Client | Customizable debug screen |
+| [MiniHUD](https://modrinth.com/mod/minihud) | Client | Customizable miniF3 screen |
 | [Enchantment Descriptions](https://modrinth.com/mod/enchantment-descriptions) | Client | Shows what enchantments do |
 | [JEI (Just Enough Items)](https://modrinth.com/mod/jei) | Both | Recipe viewer |
 | [Mouse Tweaks](https://modrinth.com/mod/mouse-tweaks) | Client | Better inventory mouse controls |
@@ -62,7 +66,6 @@ A Docker-based Minecraft Fabric server for Unraid with automatic mod syncing, sc
 
 | Mod | Required By |
 |-----|-------------|
-| [Cloth Config](https://modrinth.com/mod/cloth-config) | BetterF3 |
 | [Collective](https://modrinth.com/mod/collective) | Configurable Despawn Timer |
 | [MaLiLib](https://modrinth.com/mod/malilib) | Litematica |
 | [Placeholder API](https://modrinth.com/mod/placeholder-api) | ModMenu |
@@ -72,9 +75,9 @@ A Docker-based Minecraft Fabric server for Unraid with automatic mod syncing, sc
 ## Backups
 ### Automatic Backups
 | Type | Schedule | Retention | Location |
-|-----|---------|
-| Hourly | Every hour (when players are online) | 3 days | {BACKUP_PATH}/hourly/
-| Daily | 4:00 AM | 30 days | {BACKUP_PATH}/daily/
+|------|----------|-----------|----------|
+| Hourly | Every hour (when players are online) | 3 days | {BACKUP_PATH}/hourly/ |
+| Daily | 4:00 AM | 30 days | {BACKUP_PATH}/daily/ |
 
 ### Manual Backups
 ```
@@ -82,26 +85,26 @@ docker exec minecraft-backup-hourly backup now
 ```
 
 ### Restore from Backup
+1. Stop the docker stack
+2. Extract backup
 ```
-# Stop the docker stack
-
-# Extract backup
 cd {APPDATA_PATH}/minecraft-fabric
 tar -xzf {BACKUP_PATH}/daily/world-daily-YYYY-MM-DD.tar.gz
-
-# Fix permissions
-chown -R 99:100 {APPDATA_PATH}/minecraft-fabric
-
-# Start the docker stack
 ```
+3. Fix permissions
+```
+chown -R 99:100 {APPDATA_PATH}/minecraft-fabric
+```
+4. Start the docker stack
 
 ## Player Instructions
 Step 1: Install Prism Launcher
-Download and install Prism Launcher for your operating system.
+Download and install Prism Launcher for your operating system
 
 Step 2: Add Your Minecraft Account
 1. Open Prism Launcher
-2. Click Accounts in the top-right
+2. You will likely be prompted to add a Microsoft account
+If you're not prompted to add one, click Accounts in the top-right
 3. Click Add Microsoft
 4. Sign in with your Microsoft/Minecraft account
 
@@ -109,12 +112,13 @@ Step 3: Create Server Instance
 1. Click Add Instance
 2. Set name: (optional)
 3. Select type: custom
-4. Select Minecraft version: 1.21.11
+4. Select Minecraft version
 5. Select mod loader: Fabric
-6. Click OK
+6. Select Fabric version
+7. Click OK
 
 Step 4: Download Packwiz Bootstrap
-1. Download packwiz-installer-bootstrap.jar | https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/packwiz-installer-bootstrap.jar
+1. Download [packwiz-installer-bootstrap.jar](https://github.com/packwiz/packwiz-installer-bootstrap/releases/latest/download/)
 2. Right-click your instance → Folder
 3. Open the minecraft folder
 4. Place packwiz-installer-bootstrap.jar in the minecraft folder
@@ -136,8 +140,8 @@ When the server admin adds or updates mods, Packwiz automatically downloads the 
 
 ## Managing Mods
 ### Add new mods from Modrinth
-Find the mod you want to add on [Modrinth](https://modrinth.com/)
-Add the mod to the server with packwiz
+Find the mod(s) you want to add on [Modrinth](https://modrinth.com/)
+Add the mod(s) to the server with packwiz
 ```
 packwiz modrinth add <mod-name>
 ```
@@ -146,6 +150,19 @@ Refresh index
 packwiz refresh
 ```
 Then commit and push the change to the repo.
+Restart the server for server-side mods. Clients will add the new mod(s) on next launch.
+
+### Remove a mod
+Similar to adding mods, remove mods with packwiz
+```
+packwiz remove <mod-name>
+```
+Refresh index
+```
+packwiz refresh
+```
+Then commit and push the change to the repo.
+Restart the server for server-side mods. Clients will sync-up on next launch.
 
 ### Update All Mods
 ```
@@ -153,4 +170,4 @@ packwiz update --all
 packwiz refresh
 ```
 Then commit and push the change to the repo.
-After pushing, restart the server for server-side mods. Clients will auto-update on next launch.
+Restart the server for server-side mods. Clients will auto-update on next launch.
