@@ -1,0 +1,26 @@
+services:
+  dockhand:
+    image: fnsys/dockhand:${DOCKHAND_VERSION:-latest}
+    container_name: dockhand
+    restart: unless-stopped
+    
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=99
+      - PGID=100
+    
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APPDATA_PATH}/dockhand:/app/data
+    
+    networks:
+      br0:
+        ipv4_address: 10.0.0.13
+    
+    labels:
+      - "net.unraid.docker.webui=http://10.0.0.13:3000"
+      - "net.unraid.docker.icon=https://raw.githubusercontent.com/dockhand/dockhand/main/public/favicon.svg"
+
+networks:
+  br0:
+    external: true
